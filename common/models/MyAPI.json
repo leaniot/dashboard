@@ -1,0 +1,12 @@
+{
+  "name": "MyAPI",
+  "plural": "MyAPI",
+  "base": "Model",
+  "idInjection": false,
+  "properties": {},
+  "options": {
+    "promisify": true
+  },
+  "acls": [],
+  "methods": []
+}

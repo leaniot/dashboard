@@ -1,1 +1,26 @@
-{}
+{
+	"rawData": {
+		"connector": "rest",
+		"debug": "true",
+		"operations": [
+			{
+			    "template": {
+			    	"method": "GET",
+			    	"url": "http://cloud.mageia.me/leaniot/firsts",
+			    	"headers": {
+			        	"accept": "application/json"
+			      	},
+			    	"query": {
+			    		"filter": {
+			    			"limit": 5
+			    		}
+			    	}
+			    },
+			    "functions": {
+			    	"Test": []
+			    },
+			    "responsePath": "$"
+		  	}
+		]
+	}
+}

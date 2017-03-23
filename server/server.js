@@ -26,4 +26,7 @@ boot(app, __dirname, function(err) {
   // start the server if `$ node server.js`
   if (require.main === module)
     app.start();
+    app.models.MyAPI.Test(function(res){console.log(res)});
 });
+
+
