@@ -15,6 +15,16 @@ app.start = function() {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
+
+    app.models.MyAPI.Test().then(
+      function (res) {
+        console.log(res);
+      }, 
+      function(error) {
+        console.error('uh oh: ', error);
+      }
+    );
+    
   });
 };
 
@@ -26,7 +36,6 @@ boot(app, __dirname, function(err) {
   // start the server if `$ node server.js`
   if (require.main === module)
     app.start();
-    app.models.MyAPI.Test(function(res){console.log(res)});
 });
 
 
