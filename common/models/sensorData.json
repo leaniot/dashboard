@@ -1,6 +1,6 @@
 {
-  "name": "MyAPI",
-  "plural": "MyAPI",
+  "name": "sensorData",
+  "plural": "sensorData",
   "base": "Model",
   "idInjection": false,
   "properties": {},
