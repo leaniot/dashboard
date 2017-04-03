@@ -1,0 +1,20 @@
+<head><title>LoopBack</title></head>
+<body>
+    <h1>LoopBack Rocks!</h1>
+    <p>Hello World... </p>
+</body>
+
+<script src='bundle.js'></script>
+<script src='/js/utils.js'></script>
+
+<script>
+	var projectId = "{{ projectId }}";
+	var URL_getSensorInfo = "";
+
+ 	alert(projectId);
+ 	
+ 	requestBackEnd(
+ 		{ projectId: projectId }, 
+ 		URL_getSensorInfo
+ 	);
+</script>

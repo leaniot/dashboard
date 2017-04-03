@@ -1,9 +1,22 @@
 'use strict';
 
-var loopback = require('loopback');
-var boot = require('loopback-boot');
-var app  = module.exports = loopback();
-var exec = require('exec');
+var loopback = require('loopback'),
+    boot     = require('loopback-boot'),
+    app      = module.exports = loopback(),
+    path     = require('path');
+
+var exec   = require('exec'),
+    conn   = require('./dao/connection.js'),
+    series = require('./dao/temporal-data.js');
+
+// Set static files paths
+app.set('template', path.join(__dirname, '../client/template'));
+app.set('js', path.join(__dirname, '../client/js'));
+
+// Set view engine
+var engines = require('consolidate');
+app.engine('html', engines.mustache);
+app.set('view engine', 'html');
 
 app.start = function() {
 // start the web server
@@ -16,8 +29,14 @@ app.start = function() {
             console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
         }
 
-        // For testing Rest Connector and Data Model
-        // app.models.sensorData.Test().then(
+        // conn.getSensorRawDataWithinWindows("vxTcE7MKQtGdtZaeLS7tkW", "cuyaPZUstp2uttkJxUgGie", "dummy-sensor-0");
+        // series.test();
+
+        /*
+         * For testing Rest Connector and Data Model
+         */
+
+        // app.models.sensorData.Test(2).then(
         //     function (res) {
         //         console.log(res);
         //     }, 
@@ -26,16 +45,19 @@ app.start = function() {
         //     }
         // );
 
-        // For debugging and showing data in a easy way,
-        // it invokes a shell to start visdom
-        exec('echo test!', // + req.params.movie,
-            function (error, stdout, stderr) {
-                console.log('stdout: ' + stdout);
-                console.log('stderr: ' + stderr);
-                if (error != null) {
-                    console.log('exec error: ' + error);
-                }
-        });
+        /*
+         * For debugging and showing data in a easy way,
+         * it invokes a shell to start visdom
+         */
+
+        // exec('echo test!', // + req.params.movie,
+        //     function (error, stdout, stderr) {
+        //         console.log('stdout: ' + stdout);
+        //         console.log('stderr: ' + stderr);
+        //         if (error != null) {
+        //             console.log('exec error: ' + error);
+        //         }
+        // });
 
     });
 };

@@ -1,19 +1,17 @@
 {
 	"rawData": {
 		"connector": "rest",
-		"debug": "true",
+		"debug": "false",
 		"operations": [
 			{
 			    "template": {
 			    	"method": "GET",
-			    	"url": "http://cloud.mageia.me/leaniot/firsts",
+			    	"url":    "http://cloud.mageia.me/leaniot/Firsts",
 			    	"headers": {
-			        	"accept": "application/json"
+			        	"Accept": "application/json"
 			      	},
 			    	"query": {
-			    		"filter": {
-			    			"limit": 5
-			    		}
+			    		"filter": "{'limit': 1, 'order': 'timestamp', 'where': { 'project_id': 'vxTcE7MKQtGdtZaeLS7tkW', 'device_id':  'cuyaPZUstp2uttkJxUgGie', 'sensor_id':  'dummy-sensor-0', 'timestamp': {'between': [0, 1490607000000]},'payload': {'between': [0, 50000000]}}}"
 			    	}
 			    },
 			    "functions": {

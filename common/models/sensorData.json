@@ -1,12 +1,12 @@
 {
-  "name": "sensorData",
-  "plural": "sensorData",
-  "base": "Model",
-  "idInjection": false,
-  "properties": {},
-  "options": {
-    "promisify": true
-  },
-  "acls": [],
-  "methods": []
+    "name": "sensorData",
+    "plural": "sensorData",
+    "base": "Model",
+    "idInjection": false,
+    "properties": {},
+    "options": {
+        "promisify": true
+    },
+    "acls": [],
+    "methods": []
 }
