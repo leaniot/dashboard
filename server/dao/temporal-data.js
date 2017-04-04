@@ -7,7 +7,7 @@ var app = require('../server'),
 var query_limit = 100;
 
 var getSensorData = function () {
-	app.models.sensorData.Test().then(
+	app.models.sensorData.getSensorRawDataWithinWindows().then(
 		function (res) {
 			console.log(res);
 		},
