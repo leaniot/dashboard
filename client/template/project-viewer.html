@@ -2,19 +2,16 @@
 <body>
     <h1>LoopBack Rocks!</h1>
     <p>Hello World... </p>
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bluebird.min.js"></script>
+    <script src="/js/utils.js"></script>
+	<script>
+		var projectId = "{{ projectId }}";
+		
+	 	requestBackEnd(
+	 		{ projectId: projectId }, 
+	 		"/projectBasicInfo"
+	 	);
+	</script>
 </body>
-
-<script src='bundle.js'></script>
-<script src='/js/utils.js'></script>
-
-<script>
-	var projectId = "{{ projectId }}";
-	var URL_getSensorInfo = "";
-
- 	alert(projectId);
- 	
- 	requestBackEnd(
- 		{ projectId: projectId }, 
- 		URL_getSensorInfo
- 	);
-</script>
