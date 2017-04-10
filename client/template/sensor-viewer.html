@@ -24,11 +24,11 @@
  		"/sensorLatestTemporalView"
  	).then(
  		function (sensorData) {
- 				// Labels for starting data
+ 			// Labels for starting data
  			var labels   = sensorData.timestamps,
- 			    // datasets for starting data
+ 			// datasets for starting data
  				datasets = _.chain(sensorData.data).
- 					// Extract temporal data from sensorData according to "temporalKeys"
+ 			// Extract temporal data from sensorData according to "temporalKeys"
  					map(function (item) {
 	 					return _.map(sensorData.temporalKeys, function (key) {
 	 						return item[key];
@@ -36,7 +36,7 @@
  					// Unzip to reshape the 2d array, 
  					// Make same type of data into a same array.
  					}).unzip().value(), 
- 				// Starting data for chart.js
+ 			// Starting data for chart.js
  				startingData = {
  					labels: labels,
  					datasets: _.map(datasets, function (data) {
@@ -53,8 +53,6 @@
 			var sensorLiveChart = new Chart(ctx).Line(startingData, {animationSteps: 15});
 
 			setInterval( function() {
-				// Get a random index point
-				// var indexToUpdate = Math.round(Math.random() * startingData.labels.length);
 				requestBackEnd(
 					{ sensorId: sensorId }, 
 			 		"/sensorLatestTemporalView"
