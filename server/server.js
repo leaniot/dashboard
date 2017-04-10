@@ -6,8 +6,8 @@ var loopback = require('loopback'),
     path     = require('path');
 
 var exec   = require('exec'),
-    conn   = require('./dao/connection.js'),
-    series = require('./dao/temporal-data.js');
+    conn   = require('./dao/connection.js');
+    // series = require('./dao/temporal-data.js');
 
 // Set static files paths
 app.set('template', path.join(__dirname, '../client/template'));

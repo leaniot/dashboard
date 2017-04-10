@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<head>
+	<title>LoopBack</title>
+	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
+	<script src="/js/underscore.js"></script>
+	<script src="/js/jquery.js"></script>
+	<script src="/js/bluebird.min.js"></script>
+	<script src="/js/utils.js"></script>
+</head>
+<body>
+    <h1>LoopBack Rocks!</h1>
+    <p>Hello World... </p>
+    <canvas id="latestTemporalChart" width="1000" height="300"></canvas>
+</body>
+<script>
+	var sensorId = "{{ sensorId }}";
+
+	var canvas = document.getElementById('latestTemporalChart'),
+    	ctx    = canvas.getContext('2d');
+
+    // Request sensor data first time.
+	requestBackEnd(
+ 		{ sensorId: sensorId }, 
+ 		"/sensorLatestTemporalView"
+ 	).then(
+ 		function (sensorData) {
+ 				// Labels for starting data
+ 			var labels   = sensorData.timestamps,
+ 			    // datasets for starting data
+ 				datasets = _.chain(sensorData.data).
+ 					// Extract temporal data from sensorData according to "temporalKeys"
+ 					map(function (item) {
+	 					return _.map(sensorData.temporalKeys, function (key) {
+	 						return item[key];
+ 						});
+ 					// Unzip to reshape the 2d array, 
+ 					// Make same type of data into a same array.
+ 				}).unzip().value(), 
+ 				// Starting data for chart.js
+ 				startingData = {
+ 					labels: labels,
+ 					datasets: _.map(datasets, function (data) {
+ 						return {
+ 							fillColor: "rgba(220,220,220,0.2)",
+							strokeColor: "rgba(220,220,220,1)",
+							pointColor: "rgba(220,220,220,1)",
+							pointStrokeColor: "#fff",
+							data: data
+ 						}
+ 					})
+ 				};
+ 			// Reduce the animation steps for demo clarity.
+			var sensorLiveChart = new Chart(ctx).Line(startingData, {animationSteps: 15});
+
+			setInterval( function() {
+				// Get a random index point
+				// var indexToUpdate = Math.round(Math.random() * startingData.labels.length);
+				requestBackEnd(
+					{ sensorId: sensorId }, 
+			 		"/sensorLatestTemporalView"
+			 	).then(function (sensorData) {
+			 		var item_ind = 0;
+			 		_.map(sensorData.data, function (item) {
+			 			var key_ind = 0;
+			 			_.map(sensorData.temporalKeys, function (key) {
+			 				sensorLiveChart.datasets[key_ind].points[item_ind].value = item[key];
+							sensorLiveChart.datasets[key_ind].points[item_ind].label = item["timestamp"];
+			 				key_ind ++;
+			 			});
+			 			item_ind ++;
+			 		})
+			 		// Update one of the points in the second dataset
+			 		sensorLiveChart.update();
+				});
+				
+				
+			}, 5000);
+ 	});
+	  //   startingData = {
+			// labels: [1, 2, 3, 4, 5, 6, 7],
+			// datasets: [
+			// 	{
+			// 		fillColor: "rgba(220,220,220,0.2)",
+			// 		strokeColor: "rgba(220,220,220,1)",
+			// 		pointColor: "rgba(220,220,220,1)",
+			// 		pointStrokeColor: "#fff",
+			// 		data: [65, 59, 80, 81, 56, 55, 40]
+			// 	},
+			// 	{
+			// 		fillColor: "rgba(151,187,205,0.2)",
+			// 		strokeColor: "rgba(151,187,205,1)",
+			// 		pointColor: "rgba(151,187,205,1)",
+			// 		pointStrokeColor: "#fff",
+			// 		data: [28, 48, 40, 19, 86, 27, 90]
+			// 	}
+			// ]
+	  //   };
+
+	// // Reduce the animation steps for demo clarity.
+	// var sensorLiveChart = new Chart(ctx).Line(startingData, {animationSteps: 15});
+
+
+	// setInterval(function(){
+	// // Get a random index point
+	// var indexToUpdate = Math.round(Math.random() * startingData.labels.length);
+
+	// // Update one of the points in the second dataset
+	// sensorLiveChart.datasets[1].points[indexToUpdate].value = Math.random() * 100;
+
+	// sensorLiveChart.update();
+	// }, 5000);
+
+</script>

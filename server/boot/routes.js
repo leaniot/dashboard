@@ -1,5 +1,10 @@
-var path       = require('path');
-var bodyParser = require('body-parser');
+var path       = require('path'),
+	bodyParser = require('body-parser');
+
+var sensor = require('../dao/sensor.js');
+
+// Configuration
+var limit = 50;
 
 module.exports = function(app) {
 
@@ -16,21 +21,34 @@ module.exports = function(app) {
 	});
 
 	// API for getting temporal data in a specific time window and value window
-	router.post('/sensorTemporalData', function(req, res) {
-		var projectId = req.body.projectId,
-			deviceId  = req.body.deviceId,
-			sensorId  = req.body.sensorId,
-			startTime = req.body.startTime,
-			endTime   = req.body.endTime,
-			minValue  = req.body.minValue,
-			maxValue  = req.body.maxValue;
-		return res.json({ status: 0, res: 'haha' });
+	router.post('/sensorLatestTemporalView', function(req, res) {
+		var sensorId  = req.body.sensorId,
+			startTime = 0, //req.body.startTime,
+			endTime   = 1590605000000, //req.body.endTime,
+			minValue  = 0, //req.body.minValue,
+			maxValue  = 19000000; //req.body.maxValue;
+
+		sensor.latestTemporalView(sensorId, limit).then(
+			function (data) {
+				// console.log(data);
+				return res.json({ status: 0, res: data });
+			},
+			function (err) {
+				console.log(data);
+			}
+		);
 	});
 
 	// Render Project Viewer Template
-	router.get('/monitor/:projectId', function(req, res) {
+	router.get('/monitor/project/:projectId', function(req, res) {
   		var projectId = req.params['projectId'];
     	return res.render(path.join(app.get('template') + '/project-viewer.html'), {projectId: projectId});
+  	});
+
+  	// Render Sensor Viewer Template
+	router.get('/monitor/sensor/:sensorId', function(req, res) {
+  		var sensorId = req.params['sensorId'];
+    	return res.render(path.join(app.get('template') + '/sensor-viewer.html'), {sensorId: sensorId});
   	});
 
 	// Start router
