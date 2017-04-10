@@ -10,7 +10,7 @@ Data Monitor for LeanIOT
 ##### 1. Temporal Data (for Line Chart)
 
 A standard temporal data model in json format:
-"json
+```json
 {
 	"valueBound": ["upperbound", "lowerbound"],
 	"data": [ {}, {}, ... ],
@@ -18,4 +18,4 @@ A standard temporal data model in json format:
 	"detailKeys": [ "Key_d1", "Key_d2", ... ],
 	"timestamps": [ "t1", "t2", ... ]
 }
-"
+```
