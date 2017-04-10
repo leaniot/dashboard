@@ -1,17 +1,40 @@
-<head><title>LoopBack</title></head>
+<!DOCTYPE html>
+<head>
+	<title>LoopBack</title>
+	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
+	<script src="/js/underscore.js"></script>
+	<script src="/js/jquery.js"></script>
+	<script src="/js/bluebird.min.js"></script>
+	<script src="/js/utils.js"></script>
+</head>
 <body>
     <h1>LoopBack Rocks!</h1>
     <p>Hello World... </p>
-
-    <script src="/js/jquery.js"></script>
-    <script src="/js/bluebird.min.js"></script>
-    <script src="/js/utils.js"></script>
-	<script>
-		var projectId = "{{ projectId }}";
-		
-	 	requestBackEnd(
-	 		{ projectId: projectId }, 
-	 		"/projectBasicInfo"
-	 	);
-	</script>
+    <div id="createdAt"></div>
+    <div id="updatedAt"></div>
+    <div id="createdAt"></div>
+    <div id="updatedAt"></div>
+    <div id="projectName"></div>
+    <div id="projectDesc"></div>
+    <div id="userId"></div>
 </body>
+<script>
+	var projectId = "{{ projectId }}";
+	
+ 	requestBackEnd(
+ 		{ projectId: projectId }, 
+ 		"/projectProfile"
+ 	).then(function (projectProfile) {
+ 		var devices     = projectProfile.devices,
+ 			createdAt   = projectProfile.created_at,
+ 			updatedAt   = projectProfile.updated_at,
+ 			projectName = projectProfile.name,
+ 			projectDesc = projectProfile.description,
+ 			userId      = projectProfile.user;
+ 		document.getElementById("createdAt").innerHTML = createdAt;
+ 		document.getElementById("updatedAt").innerHTML = updatedAt;
+ 		document.getElementById("projectName").innerHTML = projectName;
+ 		document.getElementById("projectDesc").innerHTML = projectDesc;
+ 		document.getElementById("userId").innerHTML = userId;
+ 	});
+</script>

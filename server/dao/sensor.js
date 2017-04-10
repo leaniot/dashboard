@@ -7,30 +7,28 @@ var app     = require("../server"),
 
 var conn = require("./connection.js");
 
-var query_limit = 100;
-
-var getLatestSensorData = function (sensor_id, limit) {
-	return conn.getLatestSensorRawData(sensor_id, limit);
+var getLatestSensorData = function (sensorId, limit) {
+	return conn.getLatestSensorRawData(sensorId, limit);
 };
 
-var getSensorDataBoundary = function (sensor_id) {
+var getSensorDataBoundary = function (sensorId) {
 	return Promise.join(
-		conn.getSensorPayloadLowerBound(sensor_id),
-		conn.getSensorPayloadUpperBound(sensor_id),
-		function (lower_bound, upper_bound) {
+		conn.getSensorPayloadLowerBound(sensorId),
+		conn.getSensorPayloadUpperBound(sensorId),
+		function (lowerBound, upperBound) {
 			return {
-				lower: lower_bound[0].payload,
-				upper: upper_bound[0].payload
+				lower: lowerBound[0].payload,
+				upper: upperBound[0].payload
 			};
 		});
 };
 
 module.exports = {
-	latestTemporalView: function (sensor_id, limit) {
-		var lower_bound, upper_bound;
+	latestTemporalView: function (sensorId, limit) {
+		var lowerBound, upperBound;
 		return Promise.join(
-			getSensorDataBoundary(sensor_id),
-			getLatestSensorData(sensor_id, limit),
+			getSensorDataBoundary(sensorId),
+			getLatestSensorData(sensorId, limit),
 			function (bound, series) {
 				var timestamps = _.map(series, 
 					function (item) {
@@ -50,7 +48,7 @@ module.exports = {
 					valueBound: [bound.lower, bound.upper],
 					data: series,
 					temporalKeys: ["payload"],
-					detailKeys: ["sensor_id", "desc", "payload", "device_id", "created"],
+					detailKeys: ["sensorId", "desc", "payload", "deviceId", "created"],
 					timestamps: timestamps
 				});
 		});

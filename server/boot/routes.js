@@ -1,7 +1,8 @@
 var path       = require('path'),
 	bodyParser = require('body-parser');
 
-var sensor = require('../dao/sensor.js');
+var sensor  = require('../dao/sensor.js'),
+	project = require('../dao/project.js');
 
 // Configuration
 var limit = 50;
@@ -15,9 +16,17 @@ module.exports = function(app) {
 	var router = app.loopback.Router();
 
 	// API for getting basic project information
-	router.post('/projectBasicInfo', function(req, res) {
+	router.post('/projectProfile', function(req, res) {
 		var projectId = req.body.projectId;
-		return res.json({ status: 0, res: 'haha' });
+		project.profileView(projectId).then(
+			function (data) {
+				return res.json({ status: 0, res: data });
+			},
+			function (err) {
+				console.log(err);
+			}
+		);
+		
 	});
 
 	// API for getting temporal data in a specific time window and value window
@@ -34,7 +43,7 @@ module.exports = function(app) {
 				return res.json({ status: 0, res: data });
 			},
 			function (err) {
-				console.log(data);
+				console.log(err);
 			}
 		);
 	});
@@ -54,3 +63,6 @@ module.exports = function(app) {
 	// Start router
   	app.use(router);
 }
+
+//http://localhost:3000/monitor/sensor/9Y6Qa4KU9GVmRKpAU5hBdm
+//http://localhost:3000/monitor/project/ycstS6W8qGAwad6KcwLGvh
