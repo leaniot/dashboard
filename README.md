@@ -24,4 +24,4 @@ A json data subject to the `standard temporal data model` could be easily visual
 
 - liveLine: A non-interactive line chart refresh the figure in a fixed interval time. Its datasource (determined by `apiParam` and `apiUrl`) is going to provide a real-time data in chronological order (which means the response of every query would return the latest data).
 
-![demo_live_line_chart](https://github.com/leaniot/dashboard/tree/master/doc/demo_live_line_chart.js)
+![demo_live_line_chart](https://github.com/leaniot/dashboard/tree/master/doc/demo_live_line_chart.gif)
