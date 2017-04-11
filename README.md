@@ -9,12 +9,31 @@ It's a develop document of dashboard for LeanIOT. The dashboard provides essenti
 Deployment
 ---
 
+Run the following script under the root directory to install all the dependencies that the service needs:
+```shell
+sudo npm install --save
+```
+Then start the service by running the following script:
+```shell
+node .
+```
+You can reach your web service by visiting `localhost:3000/`.
+
 Front End Design
 ---
 
 ### Templates
 
+This project supports switching different templates without changing too much code. You need config your template path in the `server.js` under the `/server` and restart the service to activate the new template. In `server.js`, you can set your own template path as long as the template subject to the `standard front end data model`. 
 
+```javascript
+// Set static files paths
+app.set('template', path.join(__dirname, '../client/material/template'));
+app.set('js', path.join(__dirname, '../client/material/js'));
+app.set('css', path.join(__dirname, '../client/material/css'));
+app.set('sass', path.join(__dirname, '../client/material/sass'));
+app.set('img', path.join(__dirname, '../client/material/img'));
+```
 
 ### Front End Data Model
 
@@ -33,7 +52,7 @@ A `standard temporal data model` in json format:
 
 A json data subject to the `standard temporal data model` could be easily visualized by invoking all of the methods of object `lineChart` in `client/js/line-chart.js`. For the time being, `lineChart` supports:
 
-- liveLine: A non-interactive line chart refresh the figure in a fixed interval time. Its datasource (determined by `apiParam` and `apiUrl`) is going to provide a real-time data in chronological order (which means the response of every query would return the latest data).
+- liveLine: A non-interactive line chart refresh the figure in a fixed interval time. Its datasource (determined by `apiParam` and `apiUrl`) is supposed to provide a real-time data in chronological order (which means the response of every query would return the latest data).
 
 ![demo_live_line_chart](https://github.com/leaniot/dashboard/blob/master/doc/demo_live_line_chart.gif)
 
