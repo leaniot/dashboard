@@ -10,8 +10,11 @@ var exec   = require('exec'),
     // series = require('./dao/temporal-data.js');
 
 // Set static files paths
-app.set('template', path.join(__dirname, '../client/template'));
-app.set('js', path.join(__dirname, '../client/js'));
+app.set('template', path.join(__dirname, '../client/material/template'));
+app.set('js', path.join(__dirname, '../client/material/js'));
+app.set('css', path.join(__dirname, '../client/material/css'));
+app.set('sass', path.join(__dirname, '../client/material/sass'));
+app.set('img', path.join(__dirname, '../client/material/img'));
 
 // Set view engine
 var engines = require('consolidate');
