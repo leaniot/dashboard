@@ -1,13 +1,24 @@
-Dashboard for LeanIOT
+Develop Document of Dashboard for LeanIOT
 ===
 
-### Brief Introduction
+Brief Introduction
+---
 
-### Deployment
+It's a develop document of dashboard for LeanIOT. The dashboard provides essential features for allowing users to manage their configurations, devices, and monitor data, including user management, notification management, data visualization and so on. In this document, it mainly includes 3 parts: deployment, front end design and back end design. 
+
+Deployment
+---
+
+Front End Design
+---
+
+### Templates
+
+
 
 ### Front End Data Model
 
-##### 1. Temporal Data (for Line Chart)
+#### 1. Temporal Data (for Line Chart)
 
 A `standard temporal data model` in json format:
 ```json
@@ -25,3 +36,16 @@ A json data subject to the `standard temporal data model` could be easily visual
 - liveLine: A non-interactive line chart refresh the figure in a fixed interval time. Its datasource (determined by `apiParam` and `apiUrl`) is going to provide a real-time data in chronological order (which means the response of every query would return the latest data).
 
 ![demo_live_line_chart](https://github.com/leaniot/dashboard/blob/master/doc/demo_live_line_chart.gif)
+
+There is an example for detailed explanation. In our backend loopback service, it provides an API (param: `{ sensorId: sensorId }`, url: `"/sensorLatestTemporalView"`) for returning the latest sensor data in chronological order. 
+```javascript
+var sensorId = "{{ sensorId }}";
+
+lineChart.liveLine(
+	{ sensorId: sensorId },
+	"/sensorLatestTemporalView",
+	"latestTemporalChart", 
+	5000
+);
+```
+
