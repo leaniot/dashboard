@@ -20,7 +20,7 @@ A `standard temporal data model` in json format:
 }
 ```
 
-A json data subject to the standard temporal data model` could be easily visualized by invoking all of the methods of object `lineChart`in `client/js/line-chart.js`. For the time being, `lineChart` supports:
+A json data subject to the `standard temporal data model` could be easily visualized by invoking all of the methods of object `lineChart` in `client/js/line-chart.js`. For the time being, `lineChart` supports:
 
 - liveLine: A non-interactive line chart refresh the figure in a fixed interval time. Its datasource (determined by `apiParam` and `apiUrl`) is going to provide a real-time data in chronological order (which means the response of every query would return the latest data).
 
