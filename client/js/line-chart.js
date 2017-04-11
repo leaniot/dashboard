@@ -1,5 +1,5 @@
 lineChart = {
-	liveLine: function (apiParam, apiUrl, domId) {
+	liveLine: function (apiParam, apiUrl, domId, interval) {
 		var canvas = document.getElementById(domId),
     		ctx    = canvas.getContext('2d');
 		// Request data first time.
@@ -51,7 +51,7 @@ lineChart = {
 					});
 					
 					
-				}, 5000);
+				}, interval);
 	 	});
 	}
 };
