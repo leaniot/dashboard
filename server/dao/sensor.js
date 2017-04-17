@@ -5,16 +5,20 @@ var app     = require("../server"),
 	_       = require("underscore"),
 	Promise = require("bluebird");
 
-var conn = require("./connection.js");
+var conn    = require("./connection.js");
 
-var getLatestSensorData = function (sensorId, limit) {
-	return conn.getLatestSensorRawData(sensorId, limit);
-};
+var testEmail    = 'yzg963@gmail.com', 
+	testPassword = 'yzg134530',
+	token        = '123';
 
-var getSensorDataBoundary = function (sensorId) {
+// var getLatestSensorData = function (sensorId, limit) {
+// 	return conn.getLatestSensorRawData(sensorId, limit);
+// };
+
+var getSensorDataBoundary = function (token, sensorId) {
 	return Promise.join(
-		conn.getSensorPayloadLowerBound(sensorId),
-		conn.getSensorPayloadUpperBound(sensorId),
+		conn.getSensorPayloadLowerBound(token, sensorId),
+		conn.getSensorPayloadUpperBound(token, sensorId),
 		function (lowerBound, upperBound) {
 			return {
 				lower: lowerBound[0].payload,
@@ -24,15 +28,15 @@ var getSensorDataBoundary = function (sensorId) {
 };
 
 module.exports = {
-	latestTemporalView: function (sensorId, limit) {
+	latestTemporalView: function (token, sensorId, limit) {
 		var lowerBound, upperBound;
 		return Promise.join(
-			getSensorDataBoundary(sensorId),
-			getLatestSensorData(sensorId, limit),
+			getSensorDataBoundary(token, sensorId),
+			conn.getLatestSensorRawData(token, sensorId, limit),
 			function (bound, series) {
 				var timestamps = _.map(series, 
 					function (item) {
-						return item["timestamp"];
+						return item.timestamp;
 					});
 				// Format result
 				// A standard temporal view json format:
@@ -52,5 +56,29 @@ module.exports = {
 					timestamps: timestamps
 				});
 		});
+	},
+	cropTemporalView: function (sensorId, startTime, endTime, minValue, maxValue) {
+		return conn.getSensorRawDataWithinWindows(
+			sensorId, startTime, endTime, minValue, maxValue
+			).then(
+				function (series) {
+					var timestamps = _.map(series, 
+						function (item) {
+							return item["timestamp"];
+						}),
+						boundChain = _.chain(series)
+							.map(function (item) { 
+								return item.payload; 
+							}),
+						lowerBound = boundChain.min().value(),
+						upperBound = boundChain.max().value();
+					return Promise.resolve({
+						valueBound: [lowerBound, upperBound],
+						data: series,
+						temporalKeys: ["payload"],
+						detailKeys: ["sensorId", "desc", "payload", "deviceId", "created"],
+						timestamps: timestamps
+					});
+			});
 	}
 };

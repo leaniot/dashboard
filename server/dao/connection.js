@@ -3,9 +3,10 @@
 
 var rp = require('request-promise');
 const util = require('util');
+// Activate it when debugging
 // rp.debug = true
 
-var regular_options = function (filterString) {
+var firstsOptions = function (filterString, token) {
 	return {
 		uri: 'http://cloud.mageia.me/leaniot/Firsts',
 		method: 'GET',
@@ -13,60 +14,102 @@ var regular_options = function (filterString) {
 			filter: filterString
 		},
 	    headers: {
-	        'Accept': 'application/json'
+	        'Accept': 'application/json',
+	        'Authorization': 'JWT ' + token
 	    },
 	    json: true // Automatically parses the JSON string in the response
 	};
 };
 
 module.exports = {
-	getProjectBasicInfo: function (project_id) {
+	requestAccessToken: function (email, password) {
 		var options = {
-				uri: util.format('http://mageia.me/api/1.0.0/projects/%s/', project_id),
-				method: 'GET',
-			    headers: {
-			        'Authorization': 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Inl6Zzk2M0BnbWFpbC5jb20iLCJleHAiOjE0OTE4OTU5NjYsInVzZXJuYW1lIjoieXpnOTYzQGdtYWlsLmNvbSIsInVzZXJfaWQiOiJKZ05yZ1JoR2hyeWlFMk5HUDdIeWg3In0.VbG0XPXqI5gspg-U-j2o8YDpwC5Fj9dr3Sq6uqyX8wA'
-			    },
-			    json: true // Automatically parses the JSON string in the response
-			};
+			uri: 'http://mageia.me/api/1.0.0/token/obtain/',
+			method: 'POST',
+			body: {
+		        email: email,
+		        password: password
+		    },
+		    headers: {
+		        'Accept': 'application/json'
+		    },
+		    json: true // Automatically parses the JSON string in the response
+		};
 		return rp(options);
 	},
-	getSensorPayloadLowerBound: function (sensor_id) {
+
+	getUsers: function (token) {
+		var options = {
+			uri: 'http://mageia.me/api/1.0.0/users/',
+			method: 'GET',
+			headers: {
+				'Authorization': 'JWT ' + token
+			},
+			json: true
+		};
+		return rp(options);
+	},
+
+	getAllProjects: function (token) {
+		var options = {
+			uri: 'http://mageia.me/api/1.0.0/projects/',
+			method: 'GET',
+			headers: {
+				'Authorization': 'JWT ' + token
+			},
+			json: true
+		};
+		return rp(options);
+	},
+
+	getOneProject: function (token, project_id) {
+		var options = {
+			uri: util.format('http://mageia.me/api/1.0.0/projects/%s/', project_id),
+			method: 'GET',
+		    headers: {
+		        'Authorization': 'JWT ' + token
+		    },
+		    json: true // Automatically parses the JSON string in the response
+		};
+		return rp(options);
+	},
+
+	getSensorPayloadLowerBound: function (token, sensor_id) {
 		var filterString = util.format(
 			'{"limit": 1, \
 			"fields": {"payload": true}, \
 			"order": "payload ASC", \
 			"where": { \
 			"sensor_id": "%s"}}', sensor_id);
-		return rp(regular_options(filterString));
+		return rp(firstsOptions(filterString, token));
 	},
 
-	getSensorPayloadUpperBound: function (sensor_id) {
+	getSensorPayloadUpperBound: function (token, sensor_id) {
 		var filterString = util.format(
 			'{"limit": 1, \
 			"fields": {"payload": true}, \
 			"order": "payload DESC", \
 			"where": {"sensor_id": "%s"}}', sensor_id);
-		return rp(regular_options(filterString));
+		return rp(firstsOptions(filterString, token));
 	},
 
-	getLastSensorRawData: function (sensor_id) {
+	getLastSensorRawData: function (token, sensor_id) {
 		var filterString = util.format(
 			'{"limit": 1, \
 			"order": "timestamp DESC", \
 			"where": {"sensor_id": "%s"}}', sensor_id);
-		return rp(regular_options(filterString));
+		return rp(firstsOptions(filterString, token));
 	},
 
-	getLatestSensorRawData: function (sensor_id, limit) {
+	getLatestSensorRawData: function (token, sensor_id, limit) {
 		var filterString = util.format(
 			'{"limit": %s, \
 			"order": "timestamp DESC", \
 			"where": {"sensor_id": "%s"}}', limit, sensor_id);
-		return rp(regular_options(filterString));
+		return rp(firstsOptions(filterString, token));
 	},
 
-	getSensorRawDataWithinWindows: function (sensor_id, start_t, end_t, min_v, max_v) {
+	getSensorRawDataWithinWindows: function (token, sensor_id, start_t, end_t, min_v, max_v) {
 		var filterString = util.format(
 			'{"limit": 1000, \
 			"order": "timestamp", \
@@ -75,6 +118,6 @@ module.exports = {
 			"timestamp": {"between": [%s, %s]}, \
 			"payload": {"between": [%s, %s]}}}', 
 			sensor_id, start_t, end_t, min_v, max_v);
-		return rp(regular_options(filterString));
+		return rp(firstsOptions(filterString, token));
 	}
 };

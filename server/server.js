@@ -11,10 +11,9 @@ var exec   = require('exec'),
 
 // Set static files paths
 app.set('template', path.join(__dirname, '../client/material/template'));
-app.set('js', path.join(__dirname, '../client/material/js'));
-app.set('css', path.join(__dirname, '../client/material/css'));
-app.set('sass', path.join(__dirname, '../client/material/sass'));
-app.set('img', path.join(__dirname, '../client/material/img'));
+app.set('js', path.join(__dirname, '../client/js'));
+app.set('css', path.join(__dirname, '../client/css'));
+app.set('img', path.join(__dirname, '../client/img'));
 
 // Set view engine
 var engines = require('consolidate');
@@ -31,10 +30,7 @@ app.start = function() {
             var explorerPath = app.get('loopback-component-explorer').mountPath;
             console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
         }
-
-        // conn.getSensorRawDataWithinWindows("vxTcE7MKQtGdtZaeLS7tkW", "cuyaPZUstp2uttkJxUgGie", "dummy-sensor-0");
-        // series.test();
-
+        
         /*
          * For testing Rest Connector and Data Model
          */

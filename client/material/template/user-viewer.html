@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<head>
+	<title>LoopBack</title>
+	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
+	<script src="/js/underscore.js"></script>
+	<script src="/js/jquery.js"></script>
+	<script src="/js/bluebird.min.js"></script>
+	<script src="/js/utils.js"></script>
+</head>
+<body>
+    <h1>LeanIOT</h1>
+    <div>
+	    <p>Users</p>
+	    <ul id="userList"></ul>
+	</div>
+
+	<div>
+		<p>Projects</p>
+		<ul id="projectList"></ul>
+	</div>
+</body>
+<script>
+	var projectId = "{{ projectId }}";
+	
+ 	requestBackEnd(
+ 		{ token: token }, 
+ 		"/users"
+ 	).then(function (data) {
+ 		var users    = data.usersData,
+ 			projects = data.projectsData;
+
+ 		var userListStr    = "",
+ 			projectListStr = "";
+ 		_.map(users, function (user) {
+ 			userListStr += String.format(
+ 				'<li> User Name: <a href="">{0}</a>, \
+ 				Email: {1}, Is Stuff: {2}, Is Admin: {3}, Is Active: {4} </li>',
+ 				user.username, user.email, user.is_staff, user.is_admin, user.is_active);
+ 		});
+ 		_.map(projects, function (project) {
+ 			projectListStr += String.format(
+ 				'<li> Project Name: <a href="/dashboard/project/{0}">{1}</a>, \
+ 				Description: {2}, Created At: {3}, Updated At: {4}</li>',
+ 				project.id, project.name, project.description, project.created_at, project.updated_at);
+ 		});
+ 		document.getElementById("userList").innerHTML = userListStr;
+ 		document.getElementById("projectList").innerHTML = projectListStr;
+ 	});
+</script>

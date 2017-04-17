@@ -8,33 +8,50 @@
 	<script src="/js/utils.js"></script>
 </head>
 <body>
-    <h1>LoopBack Rocks!</h1>
-    <p>Hello World... </p>
-    <div id="createdAt"></div>
-    <div id="updatedAt"></div>
-    <div id="createdAt"></div>
-    <div id="updatedAt"></div>
-    <div id="projectName"></div>
-    <div id="projectDesc"></div>
-    <div id="userId"></div>
+    <h1>LeanIOT</h1>
+    <p>Project</p>
+    Created At <div id="createdAt"></div>
+    Updated At <div id="updatedAt"></div>
+    Project Name <div id="projectName"></div>
+    Project Description <div id="projectDesc"></div>
+    Devices <ul id="devicesList"></ul>
+
 </body>
 <script>
 	var projectId = "{{ projectId }}";
 	
  	requestBackEnd(
- 		{ projectId: projectId }, 
+ 		{ projectId: projectId, token: token }, 
  		"/projectProfile"
  	).then(function (projectProfile) {
  		var devices     = projectProfile.devices,
  			createdAt   = projectProfile.created_at,
  			updatedAt   = projectProfile.updated_at,
  			projectName = projectProfile.name,
- 			projectDesc = projectProfile.description,
- 			userId      = projectProfile.user;
+ 			projectDesc = projectProfile.description;
  		document.getElementById("createdAt").innerHTML = createdAt;
  		document.getElementById("updatedAt").innerHTML = updatedAt;
  		document.getElementById("projectName").innerHTML = projectName;
  		document.getElementById("projectDesc").innerHTML = projectDesc;
- 		document.getElementById("userId").innerHTML = userId;
+
+        var deviceListStr = "";
+        _.map(devices, function (device) {
+            var sensorListStr = "";
+            _.map(device.sensors, function (sensor) {
+                sensorListStr += String.format(
+                    '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
+                    Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5}</li>', 
+                    sensor.id, sensor.name, sensor.data_source,
+                    sensor.data_type, sensor.created_at, sensor.updated_at);
+            });
+            
+            deviceListStr += String.format(
+                '<li> Device Name: <a href="/dashboard/device/{0}">{1}</a>, \
+                Description: {2}, Is Active: {3}, Is Online: {4}, Created At: {5}, Updated At: {6} \
+                Sensors List: <ul>{7}</ul></li>',
+                device.id, device.name, device.description, device.active, 
+                device.online, device.created_at, device.updated_at, sensorListStr);
+        });
+        document.getElementById("devicesList").innerHTML = deviceListStr;
  	});
 </script>
