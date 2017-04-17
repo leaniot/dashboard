@@ -76,7 +76,7 @@ module.exports = function(app) {
     	return res.render(path.join(app.get('template') + '/index.html'));
   	});
 
-  	// Render Project Viewer Template
+  	// Render User Viewer Template
 	router.get('/dashboard/user', function(req, res) {
     	return res.render(path.join(app.get('template') + '/user-viewer.html'));
   	});
@@ -86,6 +86,13 @@ module.exports = function(app) {
   		var projectId = req.params['projectId'];
     	return res.render(path.join(app.get('template') + '/project-viewer.html'), {projectId: projectId});
   	});
+
+  	// Render Project Viewer Template
+	router.get('/dashboard/device/:deviceId', function(req, res) {
+  		var deviceId = req.params['deviceId'];
+    	return res.render(path.join(app.get('template') + '/device-viewer.html'), {deviceId: deviceId});
+  	});
+
 
   	// Render Sensor Viewer Template
 	router.get('/dashboard/sensor/:sensorId', function(req, res) {

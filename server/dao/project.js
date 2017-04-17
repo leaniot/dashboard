@@ -10,7 +10,6 @@ var conn = require("./connection.js");
 var testEmail    = 'yzg963@gmail.com', 
 	testPassword = 'yzg134530';
 
-
 var getProjectProfile = function (token, projectId) {
 	// TODO: Considet to add limit and skip for this method
 	// return conn.requestAccessToken(testEmail, testPassword);

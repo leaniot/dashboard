@@ -8,9 +8,8 @@ var app     = require("../server"),
 var conn    = require("./connection.js");
 
 var testEmail    = 'yzg963@gmail.com', 
-	testPassword = 'yzg134530',
-	token        = '123';
-
+	testPassword = 'yzg134530';
+	
 // var getLatestSensorData = function (sensorId, limit) {
 // 	return conn.getLatestSensorRawData(sensorId, limit);
 // };
