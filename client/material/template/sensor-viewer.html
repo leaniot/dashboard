@@ -11,6 +11,7 @@
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
 	<script src="/js/line-chart.js"></script>
+	<script src="/js/lbs.js"></script>
 
 	<!-- Baidu LBS -->
     <link href="/css/baidu.css" rel="stylesheet"/>
@@ -29,15 +30,6 @@
 	<div id="result">
 		<button id="open">打开</button><button id="close">关闭</button>
 	</div>
-	<!--城市列表-->
-	<div class="sel_container"><strong id="curCity">北京市</strong> [<a id="curCityText" href="javascript:void(0)">更换城市</a>]</div>
-	<div class="map_popup" id="cityList" style="display:none;">
-		<div class="popup_main">
-			<div class="title">城市列表</div>
-			<div class="cityList" id="citylist_container"></div>
-			<button id="popup_close"></button>
-		</div>
-	</div>
 
 </body>
 <script>
@@ -49,5 +41,7 @@
 		"latestTemporalChart", 
 		5000
 	);
+ 	baiduMap.sensorMap("", "l-map");
+	
+	
 </script>
-<script src="/js/lbs.js"></script>
