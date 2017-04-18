@@ -7,17 +7,50 @@
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
 	<script src="/js/line-chart.js"></script>
+	<!--  Material Dashboard CSS    -->
+    <link href="/material/css/material-dashboard.css" rel="stylesheet"/>
 </head>
 <body>
     <h1>Device Viewer</h1>
+    <ul id="sensorsList"></ul>
+    <!-- <canvas id="latestTemporalChart" width="1000" height="300"></canvas> -->
 </body>
 <script>
-	// var sensorId = "{{ sensorId }}";
 	var deviceId = "{{ deviceId }}"
-	// lineChart.liveLine(
-	// 	{ sensorId: sensorId, token: token },
-	// 	"/sensorLatestTemporalView",
-	// 	"latestTemporalChart", 
-	// 	5000
-	// );
+
+	requestBackEnd(
+ 		{ deviceId: deviceId, token: token }, 
+ 		"/deviceProfile"
+ 	).then(
+ 		function (deviceProfile) {
+ 			var sensors    = deviceProfile.sensors,
+ 				deviceName = deviceProfile.name,
+ 				online     = deviceProfile.online,
+ 				active     = deviceProfile.active,
+ 				desc       = deviceProfile.description,
+ 				deviceCreatedAt = deviceProfile.created_at,
+ 				deviceUpdatedAt = deviceProfile.updated_at;
+
+ 			var sensorListStr = "";
+ 			_.map(sensors, function (sensor) {
+ 				sensorListStr += String.format(
+                    '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
+                    Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5} \
+                    <canvas id="latestTemporalChart_{0}" width="1000" height="300"></canvas></li>', 
+                    sensor.id, sensor.name, sensor.data_source,
+                    sensor.data_type, sensor.created_at, sensor.updated_at);
+ 			}); 
+ 			document.getElementById("sensorsList").innerHTML = sensorListStr;
+
+ 			_.map(sensors, function (sensor) {
+ 				lineChart.liveLine(
+					{ sensorId: sensor.id, token: token },
+					"/sensorLatestTemporalView",
+					String.format("latestTemporalChart_{0}", sensor.id), 
+					5000
+				);
+ 			});
+ 	})
+
+	
 </script>

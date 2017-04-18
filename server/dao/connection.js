@@ -33,7 +33,7 @@ module.exports = {
 		    headers: {
 		        'Accept': 'application/json'
 		    },
-		    json: true // Automatically parses the JSON string in the response
+		    json: true
 		};
 		return rp(options);
 	},
@@ -62,6 +62,30 @@ module.exports = {
 		return rp(options);
 	},
 
+	getOneDevice: function (token, device_id) {
+		var options = {
+			uri: util.format('http://mageia.me/api/1.0.0/devices/%s/', device_id),
+			method: 'GET',
+		    headers: {
+		        'Authorization': 'JWT ' + token
+		    },
+		    json: true
+		};
+		return rp(options);
+	},
+
+	// getSensorsByPage: function (token, device_id, page) {
+	// 	var options = {
+	// 		uri: util.format('http://mageia.me/api/1.0.0/sensors/%s/?page=%s', device_id, page),
+	// 		method: 'GET',
+	// 	    headers: {
+	// 	        'Authorization': 'JWT ' + token
+	// 	    },
+	// 	    json: true
+	// 	};
+	// 	return rp(options);
+	// },
+
 	getOneProject: function (token, project_id) {
 		var options = {
 			uri: util.format('http://mageia.me/api/1.0.0/projects/%s/', project_id),
@@ -69,11 +93,14 @@ module.exports = {
 		    headers: {
 		        'Authorization': 'JWT ' + token
 		    },
-		    json: true // Automatically parses the JSON string in the response
+		    json: true
 		};
 		return rp(options);
 	},
 
+	// *******************************************************
+	// Stores in Firsts, which is a document-oriented Database
+	// *******************************************************
 	getSensorPayloadLowerBound: function (token, sensor_id) {
 		var filterString = util.format(
 			'{"limit": 1, \

@@ -3,6 +3,7 @@ var path       = require('path'),
 	Promise    = require("bluebird");
 
 var sensor  = require('../dao/sensor.js'),
+	device  = require('../dao/device.js');
 	project = require('../dao/project.js'),
 	user    = require('../dao/user.js');
 
@@ -25,12 +26,12 @@ module.exports = function(app) {
 			user.usersGroup(token), 
 			function (projectsData, usersData) {
 				console.log(projectsData);
-				console.log(projectsData[0].devices[0]);
+				// console.log(projectsData[0].devices[0]);
 				console.log(usersData);
 				console.log('Info\tSending users info to front end ...');
 				return res.json({ 
 					status: 0, 
-					res: {projectsData: projectsData, usersData: usersData} 
+					res: {projectsData: projectsData.results, usersData: usersData.results} 
 				});
 		}).catch(
 			function (err) {
@@ -38,10 +39,29 @@ module.exports = function(app) {
 		});
 	});
 
+	// TODO: It's been duplicated since API projectProfile contained  this part of data
+	// API for getting basic device information, including sensors list of a device
+	router.post('/deviceProfile', function(req, res) {
+		var deviceId = req.body.deviceId,
+			token    = req.body.token;
+
+		device.deviceView(token, deviceId).then(
+			function (data) {
+				console.log(data);
+				console.log('Info\tSending project profile to front end ...');
+				return res.json({ status: 0, res: data });
+			},
+			function (err) {
+				console.log(err);
+			}
+		);
+	});
+
 	// API for getting basic project information
 	router.post('/projectProfile', function(req, res) {
 		var projectId = req.body.projectId,
 			token     = req.body.token;
+
 		project.profileView(token, projectId).then(
 			function (data) {
 				console.log(data);

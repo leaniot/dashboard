@@ -1,17 +1,44 @@
 <!DOCTYPE html>
 <head>
 	<title>LoopBack</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
 	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
 	<script src="/js/underscore.js"></script>
 	<script src="/js/jquery.js"></script>
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
 	<script src="/js/line-chart.js"></script>
+
+	<!-- Baidu LBS -->
+    <link href="/css/baidu.css" rel="stylesheet"/>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCdDnQegXHHG75PGaWjfInkUuL9A8qbn"></script>
+	<!-- 加载百度地图样式信息窗口 -->
+	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+	<!-- 加载城市列表 -->
+	<script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.2/src/CityList_min.js"></script>
+	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"/>
 </head>
 <body>
-    <h1>LoopBack Rocks!</h1>
-    <p>Hello World... </p>
+    <h1>Sensor Viewer</h1>
     <canvas id="latestTemporalChart" width="1000" height="300"></canvas>
+
+    <div id="l-map"></div>
+	<div id="result">
+		<button id="open">打开</button><button id="close">关闭</button>
+	</div>
+	<!--城市列表-->
+	<div class="sel_container"><strong id="curCity">北京市</strong> [<a id="curCityText" href="javascript:void(0)">更换城市</a>]</div>
+	<div class="map_popup" id="cityList" style="display:none;">
+		<div class="popup_main">
+			<div class="title">城市列表</div>
+			<div class="cityList" id="citylist_container"></div>
+			<button id="popup_close"></button>
+		</div>
+	</div>
+
 </body>
 <script>
 	var sensorId = "{{ sensorId }}";
@@ -23,3 +50,4 @@
 		5000
 	);
 </script>
+<script src="/js/lbs.js"></script>
