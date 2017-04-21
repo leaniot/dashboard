@@ -1,14 +1,20 @@
 // NOTE: 
 // Require `server.js` as in any node.js app to 
 // get access the app object.
-var app     = require("../server"),
-	_       = require("underscore"),
-	Promise = require("bluebird");
+var app     = require('../server'),
+	_       = require('underscore'),
+	Promise = require('bluebird');
 
-var conn = require("./connection.js");
+var conn   = require('./connection.js'),
+	sensor = require('./sensor.js')
 
 var testEmail    = 'yzg963@gmail.com', 
 	testPassword = 'yzg134530';
+
+const dataSourceType = {
+    line: [0, 1], 
+    geo: 2
+};
 
 var getDeviceProfile = function (token, deviceId) {
 	// TODO: Considet to add limit and skip for this method
@@ -28,5 +34,20 @@ var getDeviceProfile = function (token, deviceId) {
 module.exports = {
 	deviceView: function (token, deviceId) {
 		return getDeviceProfile(token, deviceId);
+	},
+	
+	mapView: function (token, deviceId, limit) {
+		return getDeviceProfile(token, deviceId).then(function (deviceProfile) {
+			var geoSensor = _.filter(deviceProfile.sensors, function (_sensor) {
+				return _sensor.data_source == dataSourceType.geo;
+			});
+			
+			if (geoSensor.length <= 0) {
+				return Promise.reject({
+					msg: 'No geo sensor in this device.'
+				});
+			}
+			return sensor.latestMapView(token, geoSensor[0].id, limit);
+		});
 	}
 };

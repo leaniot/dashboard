@@ -1,35 +1,124 @@
-function addCustomLayer(map, customLayer, callback, keyword) {
-	if (customLayer) {
-		map.removeTileLayer(customLayer);
+pointsMarkers = [];
+curveMarker;
+
+// Info window options
+var winOpts = {
+	width : 250,     // 信息窗口宽度
+	height: 80,     // 信息窗口高度
+	title : 'Test' , // 信息窗口标题
+	enableMessage:true//设置允许信息窗发送短息
+};
+
+// TODO: use this function instead of clearOverlays()
+var resetOverlays = function (map) {
+	// Remove pointsMarker
+	for (var i = 0; i < pointsMarkers.length; i ++) {
+		map.removeOverlay(pointsMarkers[i]);
 	}
-	customLayer=new BMap.CustomLayer({
-		geotableId: 30960,
-		q: '',     // Keywords of query
-		tags: '',  // multiple strings which was sperated by spaces
-		filter: '' // Conditions for filtering, references: http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
-	});
-	map.addTileLayer(customLayer);
-	// customLayer.addEventListener('hotspotclick', callback);
+};
+
+var plotPoints = function (map, data) {
+	// TODO: use resetOverlays() instead of clearOverlays()
+	// Remove all the overlays
+	map.clearOverlays();
+	// Convert gps locations into Baidu Map Points objects
+	var locations = data.locations,
+		points    = _.map(locations, function (location) {
+			return new BMap.Point(location[1], location[0]);
+		});
+	// Set the map bounds and center automatically
+	map.setViewport(points);
+	// Plot points as markers on the map
+	for (var i = 0; i < points.length; i ++) {
+		var marker = new BMap.Marker(points[i]);
+		// Add click event for each of markers
+		marker.addEventListener('click', function (e) {
+			var p          = e.target,
+				pt         = e.point,
+				content    = '',
+				geoc       = new BMap.Geocoder();
+
+			geoc.getLocation(pt, function(rs){
+				var addComp = rs.addressComponents,
+					addr    = String.format('{0},{1},{2},{3},{4}', 
+						addComp.province, addComp.city, addComp.district, 
+						addComp.street, addComp.streetNumber);
+				var	point      = new BMap.Point(p.getPosition().lng, p.getPosition().lat),
+					infoWindow = new BMap.InfoWindow(addr, winOpts); // Create info window
+				map.openInfoWindow(infoWindow, point);               // Open info window
+			});
+		});
+		map.addOverlay(marker);
+		// Push maker into pointsMarkers
+		// pointsMarkers.push(marker);
+		// Set the first point animation bounce
+		if (i == 0) {
+			marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+		}
+	}
+	// Set curve for each pair of two consecutive points
+	curveMarker = new BMapLib.CurveLine(points, 
+		{strokeColor:"blue", strokeWeight:3, strokeOpacity:0.5}); 
+	map.addOverlay(curveMarker); 
 }
 
 baiduMap = {
-	sensorMap: function (data, domId) {
-		var map = new BMap.Map(domId),
-			point = new BMap.Point(116.403694,39.927552),
-			customLayer;
+	liveMap: function (deviceId, domId, limit, interval) {
+		// Init the map
+		var map = new BMap.Map(domId);
+		map.enableScrollWheelZoom();
+		map.enableContinuousZoom();
+		map.enableAutoResize();
+		map.addControl(new BMap.NavigationControl());
 
-		map.centerAndZoom(point, 15);
+		// First request
+		requestBackEnd(
+			{ deviceId: deviceId, limit: limit, token: token},
+			'/geoSensorLatestMapView' 
+		).then(function (data) {
+			// Plot points on the map
+			plotPoints(map, data);
+			// Start timer to update the map periodically
+			setInterval(function() {
+				// Periodical request
+				requestBackEnd(
+					{ deviceId: deviceId, limit: limit, token: token},
+					'/geoSensorLatestMapView' 
+				).then(function (data) {
+					// Plot points on the map
+					plotPoints(map, data);
+				});
+			}, interval);
+		});
+	},
+
+	updateMapByLineChart: function (deviceId, domId, lineChartData) {
+		// Init the map
+		var map = new BMap.Map(domId);
 		map.enableScrollWheelZoom();
 		map.addControl(new BMap.NavigationControl());
-		document.getElementById("open").onclick = function(){
-			addCustomLayer(map, customLayer);
-		};
-		document.getElementById("open").click();
-		document.getElementById("close").onclick = function(){
-			if (customLayer) {
-				map.removeTileLayer(customLayer);
-			}
-		};
+
+		var startTime = _.min(lineChartData.timestamps),
+			endTime   = _.max(lineChartData.timestamps)
+
+		requestBackEnd(
+			{ deviceId: deviceId, limit: 100, token: token},
+			'/geoSensorLatestMapView' 
+		).then(function (data) {
+			console.log(data);
+			// var icon = new BMap.Icon(
+			// 	url.iconUrl, 
+			// 	new BMap.Size(32, 70), 
+			// 	{imageOffset: new BMap.Size(0, 0)});
+			// // Relocate the center of the map
+			// var center = [116.403694, 39.927552];
+			// var point = new BMap.Point(center);
+			// map.centerAndZoom(point, 15);
+			// // Set marker
+			// marker = new BMap.Marker(center,{ icon: icon });
+			// map.addOverlay(marker);
+			// marker.setPosition(point);
+		});
 	}
 };
 

@@ -18,6 +18,7 @@
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCdDnQegXHHG75PGaWjfInkUuL9A8qbn"></script>
 	<!-- 加载百度地图样式信息窗口 -->
 	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
 	<!-- 加载城市列表 -->
 	<script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.2/src/CityList_min.js"></script>
 	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"/>
@@ -27,21 +28,17 @@
     <canvas id="latestTemporalChart" width="1000" height="300"></canvas>
 
     <div id="l-map"></div>
-	<div id="result">
-		<button id="open">打开</button><button id="close">关闭</button>
-	</div>
 
 </body>
 <script>
 	var sensorId = "{{ sensorId }}";
 
 	lineChart.liveLine(
-		{ sensorId: sensorId, token: token },
-		"/sensorLatestTemporalView",
+		sensorId,
 		"latestTemporalChart", 
 		5000
 	);
- 	baiduMap.sensorMap("", "l-map");
+ 	baiduMap.livePointsMap("", "", "l-map");
 	
 	
 </script>

@@ -146,5 +146,16 @@ module.exports = {
 			"payload": {"between": [%s, %s]}}}', 
 			sensor_id, start_t, end_t, min_v, max_v);
 		return rp(firstsOptions(filterString, token));
+	},
+
+	getSensorRawDataWithinTimeWindow: function (token, sensor_id, start_t, end_t) {
+		var filterString = util.format(
+			'{"limit": 1000, \
+			"order": "timestamp", \
+			"where": { \
+			"sensor_id": "%s", \
+			"timestamp": {"between": [%s, %s]}}}', 
+			sensor_id, start_t, end_t);
+		return rp(firstsOptions(filterString, token));
 	}
 };

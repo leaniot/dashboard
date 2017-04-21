@@ -1,11 +1,11 @@
 // NOTE: 
 // Require `server.js` as in any node.js app to 
 // get access the app object.
-var app     = require("../server"),
-	_       = require("underscore"),
-	Promise = require("bluebird");
+var app     = require('../server'),
+	_       = require('underscore'),
+	Promise = require('bluebird');
 
-var conn    = require("./connection.js");
+var conn    = require('./connection.js');
 
 var testEmail    = 'yzg963@gmail.com', 
 	testPassword = 'yzg134530';
@@ -50,34 +50,103 @@ module.exports = {
 				return Promise.resolve({
 					valueBound: [bound.lower, bound.upper],
 					data: series,
-					temporalKeys: ["payload"],
-					detailKeys: ["sensorId", "desc", "payload", "deviceId", "created"],
+					temporalKeys: ['payload'],
+					detailKeys: ['sensorId', 'desc', 'payload', 'deviceId', 'created'],
 					timestamps: timestamps
 				});
 		});
 	},
-	cropTemporalView: function (sensorId, startTime, endTime, minValue, maxValue) {
+
+	cropTemporalView: function (token, sensorId, startTime, endTime, minValue, maxValue) {
 		return conn.getSensorRawDataWithinWindows(
-			sensorId, startTime, endTime, minValue, maxValue
-			).then(
-				function (series) {
-					var timestamps = _.map(series, 
-						function (item) {
-							return item["timestamp"];
+				token, sensorId, startTime, endTime, minValue, maxValue
+			).then(function (series) {
+				var timestamps = _.map(series, 
+					function (item) {
+						return item.timestamp;
+					}),
+					boundChain = _.chain(series)
+						.map(function (item) { 
+							return item.payload; 
 						}),
-						boundChain = _.chain(series)
-							.map(function (item) { 
-								return item.payload; 
-							}),
-						lowerBound = boundChain.min().value(),
-						upperBound = boundChain.max().value();
-					return Promise.resolve({
-						valueBound: [lowerBound, upperBound],
-						data: series,
-						temporalKeys: ["payload"],
-						detailKeys: ["sensorId", "desc", "payload", "deviceId", "created"],
-						timestamps: timestamps
-					});
+					lowerBound = boundChain.min().value(),
+					upperBound = boundChain.max().value();
+				return Promise.resolve({
+					valueBound: [lowerBound, upperBound],
+					data: series,
+					temporalKeys: ['payload'],
+					detailKeys: ['sensorId', 'desc', 'payload', 'deviceId', 'created', 'timestamp'],
+					timestamps: timestamps
+				});
+			});
+	},
+
+	latestMapView: function (token, sensorId, limit) {
+		return conn.getLatestSensorRawData(
+				token, sensorId, limit
+			).then(function (series) {
+			// Timestamp
+			var timestamps = _.map(series, function (item) {
+					return item.timestamp;
+				}),
+			// Array of geo locations
+				geoLocations = _.map(series, function (item) {
+					return [item.payload.lat, item.payload.lng]
+				})
+			// Geo Boundary
+				latLongBoundChain = _.chain(series)
+					.map(function (item) {
+						return [item.payload.lat, item.payload.lng]; 
+					})
+					.unzip(),
+				latLowerBound = latLongBoundChain.first().min().value(),
+				latUpperBound = latLongBoundChain.first().max().value(),
+				longLowerBound = latLongBoundChain.last().min().value(),
+				longUpperBound = latLongBoundChain.last().max().value();
+			// Format result
+			// A standard map view json format
+			return Promise.resolve({
+				latBound: [latLowerBound, latUpperBound],
+				longBound: [longLowerBound, longUpperBound],
+				locations: geoLocations,
+				data: series,
+				detailKeys: ['sensorId', 'desc', 'payload', 'deviceId', 'created', 'timestamp'],
+				timestamps: timestamps
+			});
+		});
+	},
+
+	cropMapView: function (token, sensorId, startTime, endTime) {
+		return conn.getSensorRawDataWithinTimeWindow(
+			token, sensorId, startTime, endTime).then(function (series) {
+				// Timestamp
+				var timestamps = _.map(series, function (item) {
+						return item.timestamp;
+					}),
+				// Array of geo locations
+					geoLocations = _.map(series, function (item) {
+						return [item.payload.lat, item.payload.lng]
+					})
+				// Geo Boundary
+					latLongBoundChain = _.chain(series)
+						.map(function (item) {
+							return [item.payload.lat, item.payload.lng]; 
+						})
+						.unzip(),
+					latLowerBound = latLongBoundChain.first().min().value(),
+					latUpperBound = latLongBoundChain.first().max().value(),
+					longLowerBound = latLongBoundChain.last().min().value(),
+					longUpperBound = latLongBoundChain.last().max().value();
+				// Format result
+				// A standard map view json format
+				return Promise.resolve({
+					latBound: [latLowerBound, latUpperBound],
+					longBound: [longLowerBound, longUpperBound],
+					locations: geoLocations,
+					data: series,
+					detailKeys: ['sensorId', 'desc', 'payload', 'deviceId', 'created', 'timestamp'],
+					timestamps: timestamps
+				});
 			});
 	}
 };

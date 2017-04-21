@@ -17,7 +17,7 @@
 
 </body>
 <script>
-	var projectId = "{{ projectId }}";
+    var projectId = "{{ projectId }}";
 	
  	requestBackEnd(
  		{ projectId: projectId, token: token }, 
@@ -37,11 +37,13 @@
         _.map(devices, function (device) {
             var sensorListStr = "";
             _.map(device.sensors, function (sensor) {
-                sensorListStr += String.format(
-                    '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
-                    Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5}</li>', 
-                    sensor.id, sensor.name, sensor.data_source,
-                    sensor.data_type, sensor.created_at, sensor.updated_at);
+                if (sensor.data_source in dataSourceType.line) {
+                    sensorListStr += String.format(
+                        '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
+                        Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5}</li>', 
+                        sensor.id, sensor.name, sensor.data_source,
+                        sensor.data_type, sensor.created_at, sensor.updated_at);
+                }
             });
             
             deviceListStr += String.format(

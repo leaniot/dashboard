@@ -1,26 +1,42 @@
 <!DOCTYPE html>
 <head>
 	<title>LoopBack</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
 	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
 	<script src="/js/underscore.js"></script>
 	<script src="/js/jquery.js"></script>
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
 	<script src="/js/line-chart.js"></script>
+	<script src="/js/lbs.js"></script>
+
 	<!--  Material Dashboard CSS    -->
     <link href="/material/css/material-dashboard.css" rel="stylesheet"/>
+
+    <!-- Baidu LBS -->
+    <link href="/css/baidu.css" rel="stylesheet"/>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCdDnQegXHHG75PGaWjfInkUuL9A8qbn"></script>
+	<!-- 加载百度地图样式信息窗口 -->
+	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<!-- 加载城市列表 -->
+	<script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.2/src/CityList_min.js"></script>
+	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"/>
 </head>
 <body>
     <h1>Device Viewer</h1>
     <ul id="sensorsList"></ul>
-    <!-- <canvas id="latestTemporalChart" width="1000" height="300"></canvas> -->
+    <div id="l-map"></div>
 </body>
 <script>
-	var deviceId = "{{ deviceId }}"
+	var deviceId = '{{ deviceId }}';
 
 	requestBackEnd(
  		{ deviceId: deviceId, token: token }, 
- 		"/deviceProfile"
+ 		'/deviceProfile'
  	).then(function (deviceProfile) {
 		var sensors    = deviceProfile.sensors,
 			deviceName = deviceProfile.name,
@@ -29,26 +45,37 @@
 			desc       = deviceProfile.description,
 			deviceCreatedAt = deviceProfile.created_at,
 			deviceUpdatedAt = deviceProfile.updated_at;
-
+		// Set line chart for time series data
 		var sensorListStr = "";
 		_.map(sensors, function (sensor) {
-			sensorListStr += String.format(
-	            '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
-	            Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5} \
-	            <canvas id="latestTemporalChart_{0}" width="1000" height="300"></canvas></li>', 
-	            sensor.id, sensor.name, sensor.data_source,
-	            sensor.data_type, sensor.created_at, sensor.updated_at);
+			if (sensor.data_source in dataSourceType.line) {
+                sensorListStr += String.format(
+                    '<li> <a href="/dashboard/sensor/{0}">Click to view</a> Sensor Name: {1}, \
+		            Data Source: {2}, Data Type: {3}, Created At: {4}, Updated At: {5} \
+		            <canvas id="latestTemporalChart_{0}" width="1000" height="300"></canvas></li>', 
+                    sensor.id, sensor.name, sensor.data_source,
+                    sensor.data_type, sensor.created_at, sensor.updated_at);
+            }
 		}); 
-		document.getElementById("sensorsList").innerHTML = sensorListStr;
-
+		document.getElementById('sensorsList').innerHTML = sensorListStr;
+		// Set live line chart, also update map by the latest line chart data
 		_.map(sensors, function (sensor) {
-		 	lineChart.liveLine(
-				{ sensorId: sensor.id, token: token },
-				"/sensorLatestTemporalView",
-				String.format("latestTemporalChart_{0}", sensor.id), 
-				5000
-			);
+			if (sensor.data_source in dataSourceType.line) {
+			 	lineChart.liveLine(
+					sensor.id,
+					String.format('latestTemporalChart_{0}', sensor.id),
+					5000,
+					function (latestlineChartData) {
+						// Update the map by the latest line chart data
+						// baiduMap.updateMapByLineChart(deviceId, 'l-map', latestlineChartData);
+					}
+				);
+			}
 		});
+		// Set live map
+		baiduMap.liveMap(deviceId, 'l-map', 5, 5000);
+		
+
  	})
 
 	

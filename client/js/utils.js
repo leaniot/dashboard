@@ -1,6 +1,15 @@
-token = '';
-// Using browserify to bundle up all the required modules
-// var Promise = require("bluebird");
+var   token = '';
+// Types of data sources
+const dataSourceType = {
+    line: [0, 1], 
+    geo: 2
+};
+
+// URLs
+const url = {
+    iconUrl: "http://developer.baidu.com/map/jsdemo/img/dest_markers.png"
+}
+
 // Request data from backend
 // It send data to back end, but doesn't get anything from backend.
 // Annotation: It is a universal function, you can call this function to send any data back end needs.
@@ -40,11 +49,13 @@ requestBackEnd = function (para, url) {
     });
 };
 
+// Formatted String
+// It's a utility for getting formatted string. 
+// e.g. String.format("{0}:{1}:{2} {3}:{4}:{5}", year, month, day, hour, min, sec);
 String.format = function() {
     // The string containing the format items (e.g. "{0}")
     // will and always has to be the first argument.
     var theString = arguments[0];
-    
     // start with the second argument (i = 1)
     for (var i = 1; i < arguments.length; i++) {
         // "gm" = RegEx options for Global search (more than one instance)
@@ -52,6 +63,5 @@ String.format = function() {
         var regEx = new RegExp("\\{" + (i - 1) + "\\}", "gm");
         theString = theString.replace(regEx, arguments[i]);
     }
-    
     return theString;
 }
