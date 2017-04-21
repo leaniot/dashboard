@@ -1,5 +1,5 @@
-pointsMarkers = [];
-curveMarker;
+var pointsMarkers = [],
+	curveMarker;
 
 // Info window options
 var winOpts = {
@@ -9,18 +9,27 @@ var winOpts = {
 	enableMessage:true//设置允许信息窗发送短息
 };
 
+var initMap = function (domId) {
+	var map = new BMap.Map(domId);
+	map.enableScrollWheelZoom();
+	map.enableContinuousZoom();
+	map.enableAutoResize();
+	map.addControl(new BMap.NavigationControl());
+	return map;
+}
+
 // TODO: use this function instead of clearOverlays()
 var resetOverlays = function (map) {
-	// Remove pointsMarker
-	for (var i = 0; i < pointsMarkers.length; i ++) {
-		map.removeOverlay(pointsMarkers[i]);
-	}
+	// // Remove pointsMarker
+	// for (var i = 0; i < pointsMarkers.length; i ++) {
+	// 	map.removeOverlay(pointsMarkers[i]);
+	// }
+	map.clearOverlays();
 };
 
-var plotPoints = function (map, data) {
-	// TODO: use resetOverlays() instead of clearOverlays()
+var plotOneDevicePoints = function (map, data, callback) {
 	// Remove all the overlays
-	map.clearOverlays();
+	resetOverlays(map);
 	// Convert gps locations into Baidu Map Points objects
 	var locations = data.locations,
 		points    = _.map(locations, function (location) {
@@ -47,6 +56,9 @@ var plotPoints = function (map, data) {
 					infoWindow = new BMap.InfoWindow(addr, winOpts); // Create info window
 				map.openInfoWindow(infoWindow, point);               // Open info window
 			});
+			// Run callback in click event
+			// Share the raw data that belongs to the point
+			callback(data[i]);
 		});
 		map.addOverlay(marker);
 		// Push maker into pointsMarkers
@@ -63,21 +75,20 @@ var plotPoints = function (map, data) {
 }
 
 baiduMap = {
-	liveMap: function (deviceId, domId, limit, interval) {
-		// Init the map
-		var map = new BMap.Map(domId);
-		map.enableScrollWheelZoom();
-		map.enableContinuousZoom();
-		map.enableAutoResize();
-		map.addControl(new BMap.NavigationControl());
+	liveProjectMap: function (projectId, domId, limit, interval) {
 
+	},
+
+	liveDeviceMap: function (deviceId, domId, limit, interval, callback) {
+		// Init the map
+		var map = initMap(domId);
 		// First request
 		requestBackEnd(
 			{ deviceId: deviceId, limit: limit, token: token},
 			'/geoSensorLatestMapView' 
 		).then(function (data) {
 			// Plot points on the map
-			plotPoints(map, data);
+			plotOneDevicePoints(map, data, callback);
 			// Start timer to update the map periodically
 			setInterval(function() {
 				// Periodical request
@@ -86,20 +97,18 @@ baiduMap = {
 					'/geoSensorLatestMapView' 
 				).then(function (data) {
 					// Plot points on the map
-					plotPoints(map, data);
+					plotOneDevicePoints(map, data, callback);
 				});
 			}, interval);
 		});
 	},
 
-	updateMapByLineChart: function (deviceId, domId, lineChartData) {
+	updateSensorMap: function (deviceId, domId, lineChartData) {
 		// Init the map
-		var map = new BMap.Map(domId);
-		map.enableScrollWheelZoom();
-		map.addControl(new BMap.NavigationControl());
+		var map = initMap(domId);
 
 		var startTime = _.min(lineChartData.timestamps),
-			endTime   = _.max(lineChartData.timestamps)
+			endTime   = _.max(lineChartData.timestamps);
 
 		requestBackEnd(
 			{ deviceId: deviceId, limit: 100, token: token},

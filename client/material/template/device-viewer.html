@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>LoopBack</title>
+	<title>Device Viewer</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -73,7 +73,10 @@
 			}
 		});
 		// Set live map
-		baiduMap.liveMap(deviceId, 'l-map', 5, 5000);
+		baiduMap.liveDeviceMap(deviceId, 'l-map', 5, 5000, function (clickPointData) {
+			// alert(clickPointData.latBound);
+			alert('hoho');
+		});
 		
 
  	})

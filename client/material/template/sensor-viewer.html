@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>LoopBack</title>
+	<title>Sensor Viewer</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -38,7 +38,9 @@
 		"latestTemporalChart", 
 		5000
 	);
- 	baiduMap.livePointsMap("", "", "l-map");
+ 	baiduMap.updateSensorMap("", "", "l-map", function (clickPointData) {
+
+	});
 	
 	
 </script>
