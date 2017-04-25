@@ -11,8 +11,8 @@ var winOpts = {
 
 var initMap = function (domId) {
 	var map = new BMap.Map(domId);
-	map.enableScrollWheelZoom();
-	map.enableContinuousZoom();
+	// map.enableScrollWheelZoom();
+	// map.enableContinuousZoom();
 	map.enableAutoResize();
 	map.addControl(new BMap.NavigationControl());
 	return map;
@@ -58,7 +58,7 @@ var plotOneDevicePoints = function (map, data, callback) {
 			});
 			// Run callback in click event
 			// Share the raw data that belongs to the point
-			callback(data[i]);
+			callback(e);
 		});
 		map.addOverlay(marker);
 		// Push maker into pointsMarkers

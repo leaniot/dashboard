@@ -5,6 +5,24 @@ const dataSourceType = {
     geo: 2
 };
 
+const dataTypeConf = {
+    '0': {
+        material_icon: 'ac_unit',
+        text_desc: 'Temporature',
+        unit: '˚C'
+    },
+    '1': {
+        material_icon: 'storage',
+        text_desc: 'Memory',
+        unit: 'Mb'
+    },
+    '2': {
+        material_icon: 'room',
+        text_desc: 'GPS',
+        unit: null
+    }
+}
+
 // URLs
 const url = {
     iconUrl: "http://developer.baidu.com/map/jsdemo/img/dest_markers.png"

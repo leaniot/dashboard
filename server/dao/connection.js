@@ -62,6 +62,18 @@ module.exports = {
 		return rp(options);
 	},
 
+	getOneSensor: function (token, sensor_id) {
+		var options = {
+			uri: util.format('http://mageia.me/api/1.0.0/sensors/%s/', sensor_id),
+			method: 'GET',
+		    headers: {
+		        'Authorization': 'JWT ' + token
+		    },
+		    json: true
+		};
+		return rp(options);
+	},
+
 	getOneDevice: function (token, device_id) {
 		var options = {
 			uri: util.format('http://mageia.me/api/1.0.0/devices/%s/', device_id),

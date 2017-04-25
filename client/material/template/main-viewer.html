@@ -1,45 +1,26 @@
 <!DOCTYPE html>
 <!-- <head>
-	<title>Sensor Viewer</title>
-
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-
+	<title>LoopBack</title>
 	<script src="//www.chartjs.org/assets/Chart.min.js"></script>
 	<script src="/js/underscore.js"></script>
 	<script src="/js/jquery.js"></script>
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
-	<script src="/js/line-chart.js"></script>
-	<script src="/js/lbs.js"></script>
-
-    <link href="/css/baidu.css" rel="stylesheet"/>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCdDnQegXHHG75PGaWjfInkUuL9A8qbn"></script>
-
-	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
-	<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
-
-	<script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.2/src/CityList_min.js"></script>
-	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"/>
 </head>
 <body>
-    <h1>Sensor Viewer</h1>
-    <canvas id="latestTemporalChart" width="1000" height="300"></canvas>
+    <h1>User Viewer</h1>
+    <div>
+	    <p>Users</p>
+	    <ul id="userList"></ul>
+	</div>
 
-    <div id="l-map"></div>
-
+	<div>
+		<p>Projects</p>
+		<ul id="projectList"></ul>
+	</div>
 </body> -->
-
 <head>
-	<title id="sensorTitle"></title>
-
-	<link href="/css/baidu.css" rel="stylesheet"/>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCdDnQegXHHG75PGaWjfInkUuL9A8qbn"></script>
-
-	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
-	<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
-
-	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"/>
+	<title>Dashboard</title>
 
     <meta charset="utf-8" />
     <link rel="apple-touch-icon" sizes="76x76" href="/material/img/apple-icon.png" />
@@ -63,10 +44,10 @@
 	<script src="/js/jquery.js"></script>
 	<script src="/js/bluebird.min.js"></script>
 	<script src="/js/utils.js"></script>
-	<script src="/js/line-chart.js"></script>
-	<script src="/js/lbs.js"></script>
 </head>
 <body>
+    <div id="l-map"></div>
+
     <div class="wrapper">
 
         <div class="sidebar" data-color="purple" data-image="/material/img/sidebar-1.jpg">
@@ -193,27 +174,9 @@
 
             <div class="content">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12">
-							<div class="card card-stats">
-								<div class="card-header" data-background-color="blue">
-									<i id="sensorIcon" class="material-icons"></i>
-								</div>
-								<div class="card-content">
-									<h3 id="sensorName" class="category"></h3>
-									<h3 class="title">49/50<small>GB</small></h3>
-									<canvas id="latestTemporalChart" width="1000" height="300"></canvas>
-								</div>
-								<div class="card-footer">
-									<div class="stats">
-										<i class="material-icons text-danger">warning</i> <a href="#pablo">Get More Space...</a>
-									</div>
-								</div>
-							</div>
-						</div>
+                    <div id="projectList" class="row">
                     </div>
                 </div>
-                <div id="l-map"></div>
             </div>
 
             <footer class="footer">
@@ -253,34 +216,54 @@
 </body>
 
 <script>
-	var sensorId = '{{ sensorId }}';
-
-	lineChart.liveLine(
-		sensorId,
-		'latestTemporalChart', 
-		5000,
-		function (data) {
-			// var avg = _.chain(data).
-		}
-	);
-
-	requestBackEnd(
-		{ token: token, sensorId: sensorId },
-		'/sensorProfile'
-	).then(function (sensorProfile) {
-		var deviceId   = sensorProfile.device,
-			sensorName = sensorProfile.name,
-			dataType   = sensorProfile.data_type,
-			updateAt   = sensorProfile.update_at;
-
-		document.getElementById('sensorIcon').innerHTML = dataTypeConf[sensorProfile.data_type].material_icon;
-		document.getElementById('sensorName').innerHTML = sensorName + 
-			String.format('<small>{0}</small>', dataTypeConf[sensorProfile.data_type].text_desc);
-		document.getElementById('sensorTitle').innerHTML = sensorName;
-		// Set baidu map
-		baiduMap.liveDeviceMap(deviceId, 'l-map', 100, 5000, function (clickPointData) {});
-	})
- 	
+	var projectId = "{{ projectId }}";
 	
-	
+ 	requestBackEnd(
+ 		{ token: token }, 
+ 		"/users"
+ 	).then(function (data) {
+ 		var users    = data.usersData,
+ 			projects = data.projectsData;
+
+ 		var userListStr    = "",
+ 			projectListStr = "";
+ 		_.map(users, function (user) {
+ 			userListStr += String.format(
+ 				'<li> User Name: <a href="">{0}</a>, \
+ 				Email: {1}, Is Stuff: {2}, Is Admin: {3}, Is Active: {4} </li>',
+ 				user.username, user.email, user.is_staff, user.is_admin, user.is_active);
+ 		});
+ 		_.map(projects, function (project) {
+ 			projectListStr += String.format(
+ 				// '<li> Project Name: <a href="/dashboard/project/{0}">{1}</a>, \
+ 				// Description: {2}, Created At: {3}, Updated At: {4}</li>',
+ 			// 	'<div class="card card-stats"><div class="card-header" data-background-color="orange"> \
+				// <i class="material-icons"><a href="/dashboard/project/{0}">content_copy</a></i></div> \
+				// <div class="card-content"><p class="category">{1}</p> \
+				// <h3 class="title">{2}<small>devices</small></h3><div> \
+				// <div class="card-footer"><div class="stats"> \
+				// <i class="material-icons">update</i> Just Updated \
+				// <i class="material-icons text-danger">warning</i><a href="#pablo">Exception Occurred</a> \
+				// </div></div></div>',
+				'<div class="col-md-4"><div class="card card-stats"> \
+					<div class="card-header" data-background-color="green"> \
+						<i class="material-icons"><a href="/dashboard/project/{0}">content_copy</a></i> \
+					</div> \
+					<div class="card-content"> \
+						<h3 class="category">{1}</h3> \
+						<h3 class="title">{2}<small>devices</small></h3> \
+						<div class="text-gray">{3}</div> \
+					</div> \
+					<div class="card-footer"> \
+						<div class="stats"> \
+							<i class="material-icons">update</i> Updated at {5} <br>\
+							<i class="material-icons text-danger">warning</i><a href="#pablo">Exception Occurred</a> \
+						</div> \
+					</div> \
+				</div></div>',
+ 				project.id, project.name, project.devices.length, project.description, project.created_at, project.updated_at);
+ 		});
+ 		// document.getElementById("userList").innerHTML = userListStr;
+ 		document.getElementById("projectList").innerHTML = projectListStr;
+ 	});
 </script>

@@ -3,7 +3,7 @@ var path       = require('path'),
 	Promise    = require('bluebird');
 
 var sensor  = require('../dao/sensor.js'),
-	device  = require('../dao/device.js');
+	device  = require('../dao/device.js'),
 	project = require('../dao/project.js'),
 	user    = require('../dao/user.js');
 
@@ -39,6 +39,24 @@ module.exports = function(app) {
 	});
 
 	// TODO: It's been duplicated since API projectProfile contained  this part of data
+	// API for getting basic sensor information
+	router.post('/sensorProfile', function (req, res) {
+		var sensorId = req.body.sensorId,
+			token    = req.body.token;
+
+		sensor.sensorView(token, sensorId).then(
+			function (data) {
+				console.log(data);
+				console.log('Info\tSending sensor profile to front end ...');
+				return res.json({ status: 0, res: data });
+			},
+			function (err) {
+				console.log(err);
+			}
+		);
+	});
+
+	// TODO: It's been duplicated since API projectProfile contained  this part of data
 	// API for getting basic device information, including sensors list of a device
 	router.post('/deviceProfile', function (req, res) {
 		var deviceId = req.body.deviceId,
@@ -47,7 +65,7 @@ module.exports = function(app) {
 		device.deviceView(token, deviceId).then(
 			function (data) {
 				console.log(data);
-				console.log('Info\tSending project profile to front end ...');
+				console.log('Info\tSending device profile to front end ...');
 				return res.json({ status: 0, res: data });
 			},
 			function (err) {
@@ -113,8 +131,8 @@ module.exports = function(app) {
   	});
 
   	// Render User Viewer Template
-	router.get('/dashboard/user', function (req, res) {
-    	return res.render(path.join(app.get('template') + '/user-viewer.html'));
+	router.get('/dashboard/main', function (req, res) {
+    	return res.render(path.join(app.get('template') + '/main-viewer.html'));
   	});
 
 	// Render Project Viewer Template

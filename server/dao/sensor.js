@@ -14,6 +14,19 @@ var testEmail    = 'yzg963@gmail.com',
 // 	return conn.getLatestSensorRawData(sensorId, limit);
 // };
 
+var getSensorProfile = function (token, sensorId) {
+	return conn.getOneSensor(token, sensorId).catch(
+			function (err) {
+				console.log('Warn\tInvalid or expired token, reobtaining new token ...');
+				return conn.requestAccessToken(testEmail, testPassword);
+		}).then(
+			function (userInfo) {
+				console.log('Info\tNew token has been obtained.');
+				token = userInfo.token;
+				return conn.getOneSensor(token, sensorId);
+		});
+};
+
 var getSensorDataBoundary = function (token, sensorId) {
 	return Promise.join(
 		conn.getSensorPayloadLowerBound(token, sensorId),
@@ -27,6 +40,10 @@ var getSensorDataBoundary = function (token, sensorId) {
 };
 
 module.exports = {
+	sensorView: function (token, sensorId) {
+		return getSensorProfile(token, sensorId);
+	},
+
 	latestTemporalView: function (token, sensorId, limit) {
 		var lowerBound, upperBound;
 		return Promise.join(

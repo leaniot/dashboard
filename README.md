@@ -1,4 +1,4 @@
-Develop Document of Dashboard for LeanIOT
+Develop Document for Dashboard of LeanIOT
 ===
 
 Brief Introduction
@@ -66,5 +66,14 @@ lineChart.liveLine(
 	"latestTemporalChart", 
 	5000
 );
+```
+
+#### 2. Geo Location Data (for Map)
+
+A `standard geo location data model` in json format:
+```json
+{
+	
+}
 ```
 
