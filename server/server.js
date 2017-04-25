@@ -5,8 +5,8 @@ var loopback = require('loopback'),
     app      = module.exports = loopback(),
     path     = require('path');
 
-var exec   = require('exec'),
-    conn   = require('./dao/connection.js');
+// var exec   = require('exec'),
+var conn = require('./dao/connection.js');
     // series = require('./dao/temporal-data.js');
 
 // Set static files paths
