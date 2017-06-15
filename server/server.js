@@ -10,6 +10,7 @@ var conn = require('./dao/connection.js');
     // series = require('./dao/temporal-data.js');
 
 // Set static files paths
+app.set('root', path.join(__dirname, '../client'));
 app.set('template', path.join(__dirname, '../client/material/template'));
 app.set('js', path.join(__dirname, '../client/js'));
 app.set('css', path.join(__dirname, '../client/css'));
@@ -30,7 +31,7 @@ app.start = function() {
             var explorerPath = app.get('loopback-component-explorer').mountPath;
             console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
         }
-        
+
         /*
          * For testing Rest Connector and Data Model
          */
@@ -38,7 +39,7 @@ app.start = function() {
         // app.models.sensorData.Test(2).then(
         //     function (res) {
         //         console.log(res);
-        //     }, 
+        //     },
         //     function(error) {
         //         console.error('uh oh: ', error);
         //     }

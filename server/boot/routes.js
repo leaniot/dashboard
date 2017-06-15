@@ -7,6 +7,8 @@ var sensor  = require('../dao/sensor.js'),
 	project = require('../dao/project.js'),
 	user    = require('../dao/user.js');
 
+var conn    = require('../dao/connection.js');
+
 // Configuration
 var limit = 50;
 
@@ -18,19 +20,31 @@ module.exports = function(app) {
 	// Initialize router from loopback (express)
 	var router = app.loopback.Router();
 
+	router.post('/login', function(req, res) {
+    conn.requestAccessToken(req.body.email, req.body.password).then(function(data) {
+      res.send(data);
+    });
+  });
+
+  router.post('/projects', function(req, res) {
+    conn.getAllProjects(req.body.token).then(function(data) {
+      res.send(data);
+    });
+  });
+
 	// API for getting basic user information
 	router.post('/users', function(req, res) {
 		var token = req.body.token;
 		Promise.join(
 			user.projectsGroup(token),
-			user.usersGroup(token), 
+			user.usersGroup(token),
 			function (projectsData, usersData) {
 				console.log(projectsData);
 				console.log(usersData);
 				console.log('Info\tSending users info to front end ...');
-				return res.json({ 
-					status: 0, 
-					res: {projectsData: projectsData.results, usersData: usersData.results} 
+				return res.json({
+					status: 0,
+					res: {projectsData: projectsData.results, usersData: usersData.results}
 				});
 		}).catch(
 			function (err) {
@@ -153,6 +167,11 @@ module.exports = function(app) {
   		var sensorId = req.params['sensorId'];
     	return res.render(path.join(app.get('template') + '/sensor-viewer.html'), {sensorId: sensorId});
   	});
+
+	// API Testbed
+  router.get('/testbed', function(req, res) {
+    return res.render(path.join(app.get('root'), 'testbed.html'));
+  });
 
 	// Start router
   	app.use(router);
