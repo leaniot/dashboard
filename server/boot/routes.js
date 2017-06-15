@@ -8,6 +8,7 @@ var sensor  = require('../dao/sensor.js'),
 	user    = require('../dao/user.js');
 
 var conn    = require('../dao/connection.js');
+var dbConn = require('../dao/db_conn');
 
 // Configuration
 var limit = 50;
@@ -138,6 +139,46 @@ module.exports = function(app) {
 				}
 			)
 	});
+
+	router.get('/data/:sensor_id/latest', function (req, res) {
+    const sensor_id = req.params.sensor_id;
+
+    dbConn.latest('First', sensor_id).then(function (data) {
+      res.send(data);
+    }).catch(function (err) {
+      res.send({err: err.message});
+    });
+  })
+
+  router.get('/data/:sensor_id/history', function (req, res) {
+    const sensor_id = req.params.sensor_id;
+
+    var since_ts   = +req.query.since;      // required
+    var until_ts   = +req.query.until;      // optional
+    var downsample = +req.query.downsample; // optional
+
+    if (!since_ts) {
+      throw 'Missing or invalid query: "since"';
+    }
+
+    if (!until_ts) {
+      // until now by default
+      until_ts = new Date().getTime();
+    }
+
+    var promise;
+    if (downsample) {
+      promise = dbConn.downsample('First', sensor_id, since_ts, until_ts, downsample);
+    } else {
+      promise = dbConn.history('First', sensor_id, since_ts, until_ts);
+    }
+
+    promise.then(function (arr) {
+      res.send(arr);
+    }).catch(function (err) {
+        res.send({err: err.message});
+    });
+  })
 
 	// Render Dashboard Index Template
 	router.get('/dashboard', function (req, res) {
