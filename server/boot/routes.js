@@ -140,7 +140,7 @@ module.exports = function(app) {
 			)
 	});
 
-	router.get('/data/:sensor_id/latest', function (req, res) {
+	router.post('/data/:sensor_id/latest', function (req, res) {
     const sensor_id = req.params.sensor_id;
 
     dbConn.latest('First', sensor_id).then(function (data) {
@@ -150,7 +150,7 @@ module.exports = function(app) {
     });
   })
 
-  router.get('/data/:sensor_id/history', function (req, res) {
+  router.post('/data/:sensor_id/history', function (req, res) {
     const sensor_id = req.params.sensor_id;
 
     var since_ts   = +req.query.since;      // required

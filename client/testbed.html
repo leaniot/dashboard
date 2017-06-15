@@ -25,6 +25,7 @@
       margin: 4px 12px;
       font-size: 100%;
       font-weight: 300;
+      width: 300px;
     }
     button {
       font-size: 100%;
@@ -60,16 +61,23 @@
 
   <h3>3. 列出某项目下的「设备」和「传感器」</h3>
   <label for="proj-id">Project ID</label>
-  <input id="proj-id" type="text" /><br/>
+  <input id="proj-id" type="text" value="udBwnHWWSJ4G6uwQPmeUgD" /><br/>
   <button onclick="onShowDevicesAndSensors()">Show Devices and Sensors</button><br/>
   <ul id="dev-list" ></ul>
 
   <h3>4. 传感器详情</h3>
   <label for="sensor-id">Sensor ID</label>
-  <input id="sensor-id" type="text" /><br/>
+  <input id="sensor-id" type="text" value="Rpgs86ACCxA7497XvgeCzD" /><br/>
   <button onclick="onShowSensorDetail()">Show Sensor Details</button><br/>
   <ul id="sensor-config" ></ul>
 
+  <h3>5. 传感器数据</h3>
+  <label>Sensor ID 同上，查询结果见下方 Response</label><br/>
+  <button onclick="onQueryLatestData()">最近一条数据</button><br/>
+  <button onclick="onQueryHistoryData()">查询一组历史数据，参数如下</button><br/>
+  <label for="since-ts">Since</label> <input id="since-ts" type="text" value="1496817060000" /><br/>
+  <label for="until-ts">Until</label> <input id="until-ts" type="text" value="1497513751000" /><br/>
+  <label for="downsample">Down-Sample</label> <input id="downsample" type="text" value="10" />
   <hr/>
 
   <h3>Response</h3>
@@ -159,6 +167,28 @@
         config.append('<li>采集周期: ' + sensor.collector.period + ' 秒</li>');
 
         $('#result').html(JSON.stringify(sensor, null, 1));
+      }, 'json')
+    }
+
+    // 5
+    function onQueryLatestData () {
+      $.post('/data/' + $('#sensor-id').val() + '/latest', {
+        token: $('#token').val()
+      }, function (data) {
+        $('#result').html(JSON.stringify(data, null, 1));
+      }, 'json')
+    }
+
+    function onQueryHistoryData () {
+      var url = '/data/' + $('#sensor-id').val() + '/history';
+      url += '?since=' + $('#since-ts').val();
+      url += '&until=' + $('#until-ts').val();
+      url += '&downsample=' + $('#downsample').val();
+
+      $.post(url, {
+        token: $('#token').val()
+      }, function (data) {
+        $('#result').html(JSON.stringify(data, null, 1));
       }, 'json')
     }
 
