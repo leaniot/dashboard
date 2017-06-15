@@ -154,12 +154,28 @@
         const config = $('#sensor-config');
         config.empty();
         config.append('<li>传感器名称: ' + sensor.name + '</li>');
-        config.append('<li>数据源: ' + sensor.data_source + '</li>');
-        config.append('<li>数据类型: ' + sensor.data_type + '</li>');
+        config.append('<li>数据源: <code>' + sensor.data_source + '</code></li>');
+        config.append('<li>数据类型: ' + getDatatypeDesc(sensor.data_type) + '</li>');
         config.append('<li>采集周期: ' + sensor.collector.period + ' 秒</li>');
 
         $('#result').html(JSON.stringify(sensor, null, 1));
       }, 'json')
+    }
+
+    function getDatatypeDesc(datatype) {
+      if (datatype === 0) {
+        return '温度，Temperature (˚C)'
+      } else if (datatype === 1) {
+        return '内存，Memory (Byte)'
+      } else if (datatype === 2) {
+        return '地理位置, GeoLocation (BDPoint)'
+      } else if (datatype === 3) {
+        return '电压，Volt (V)'
+      } else if (datatype === 4) {
+        return '电流，安培 （A）'
+      } else if (datatype === 5) {
+        return '速度，m/s'
+      }
     }
 
   </script>
