@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Testbed</title>
+  <script src="js/jquery.js"></script>
+  <style type="text/css">
+    body {
+      margin: 40px 60px;
+      font-size: 90%;
+    }
+    h1 {
+      font-weight: 300;
+    }
+    h3 {
+      font-weight: 400;
+      color: #00b0ff;
+      margin-top: 30px;
+      margin-bottom: 4px;
+    }
+    label {
+      font-size: 90%;
+    }
+    input {
+      margin: 4px 12px;
+      font-size: 100%;
+      font-weight: 300;
+    }
+    button {
+      font-size: 100%;
+      padding: 4px 10px;
+      margin: 4px;
+    }
+    li {
+      font-size: 100%;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    code {
+      background: #d7eefa;
+      padding: 4px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Testbed</h1>
+  <hr/>
+
+  <h3>1. 用户登录</h3>
+  <label for="user">User</label> <input id="user" type="text" value="yzg963@gmail.com" /><br/>
+  <label for="password">Password</label> <input id="password" type="text" value="yzg134530" /><br/>
+  <button onclick="onLogin()">Login</button><br/>
+  <label for="token">Token</label>
+  <input id="token" type="text" /><br/>
+
+  <h3>2. 列出所有「项目」</h3>
+  <button onclick="onShowProjects()">Show Projects</button><br />
+  <ul id="proj-list" ></ul>
+
+  <h3>3. 列出某项目下的「设备」和「传感器」</h3>
+  <label for="proj-id">Project ID</label>
+  <input id="proj-id" type="text" /><br/>
+  <button onclick="onShowDevicesAndSensors()">Show Devices and Sensors</button><br/>
+  <ul id="dev-list" ></ul>
+
+  <h3>4. 传感器详情</h3>
+  <label for="sensor-id">Sensor ID</label>
+  <input id="sensor-id" type="text" /><br/>
+  <button onclick="onShowSensorDetail()">Show Sensor Details</button><br/>
+  <ul id="sensor-config" ></ul>
+
+  <hr/>
+
+  <h3>Response</h3>
+  <pre id="result"></pre>
+
+  <script>
+
+    const result = $('#result');
+
+    // 1
+    function onLogin() {
+      $.post('/login', {
+        email: "yzg963@gmail.com",
+        password: "yzg134530"
+      }, function (data) {
+        $('#token').val(data.token);
+
+        $('#result').html(JSON.stringify(data, null, 1));
+      }, 'json')
+    }
+
+    // 2
+    function onShowProjects() {
+      $.post('/projects', {
+        token: $('#token').val()
+      }, function (data) {
+        const projList = $('#proj-list');
+        projList.empty();
+        const projects = data.results;
+        for (var i = 0; i < projects.length; i++) {
+          const proj = projects[i];
+          projList.append('<li>' + proj.name + ' (id=<code>' + proj.id + '</code>)</li>')
+        }
+
+        $('#result').html(JSON.stringify(data, null, 1));
+      }, 'json')
+    }
+
+    // 3
+    function onShowDevicesAndSensors () {
+      $.post('/projectProfile', {
+        token: $('#token').val(),
+        projectId: $('#proj-id').val()
+      }, function (data) {
+        const proj = data.res;
+        const devices = proj.devices;
+
+        const devList = $('#dev-list');
+        devList.empty();
+        for (var i = 0; i < devices.length; i++) {
+          const dev = devices[i];
+          const sensors = dev.sensors;
+
+          const li = document.createElement('li');
+          li.innerHTML = '<strong>设备</strong>: ' + dev.name + ' (id=<code>' + dev.id + '</code>)';
+
+          const ul_sensor = document.createElement('ul');
+          li.appendChild(ul_sensor);
+
+          for (var j = 0; j < sensors.length; j++) {
+            const sensor = sensors[j];
+            const sub_li = document.createElement('li');
+            sub_li.innerHTML = '<strong>传感器</strong>: ' + sensor.name + ' (id=<code>' + sensor.id + '</code>)';
+            ul_sensor.appendChild(sub_li);
+          }
+
+          devList.append(li);
+        }
+
+        $('#result').html(JSON.stringify(proj, null, 1));
+      }, 'json')
+    }
+
+    // 4
+    function onShowSensorDetail () {
+      $.post('/sensorProfile', {
+        token: $('#token').val(),
+        sensorId: $('#sensor-id').val()
+      }, function (data) {
+        const sensor = data.res;
+
+        const config = $('#sensor-config');
+        config.empty();
+        config.append('<li>传感器名称: ' + sensor.name + '</li>');
+        config.append('<li>数据源: ' + sensor.data_source + '</li>');
+        config.append('<li>数据类型: ' + sensor.data_type + '</li>');
+        config.append('<li>采集周期: ' + sensor.collector.period + ' 秒</li>');
+
+        $('#result').html(JSON.stringify(sensor, null, 1));
+      }, 'json')
+    }
+
+  </script>
+</body>
+</html>
