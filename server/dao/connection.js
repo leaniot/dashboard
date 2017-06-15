@@ -1,5 +1,5 @@
 // Data type:
-// - 
+// -
 
 var rp = require('request-promise');
 const util = require('util');
@@ -99,15 +99,15 @@ module.exports = {
 	// },
 
 	getOneProject: function (token, project_id) {
-		var options = {
-			uri: util.format('http://mageia.me/api/1.0.0/projects/%s/', project_id),
-			method: 'GET',
-		    headers: {
-		        'Authorization': 'JWT ' + token
-		    },
-		    json: true
-		};
-		return rp(options);
+    const options = {
+     	uri: util.format('http://mageia.me/api/1.0.0/projects/%s/', project_id),
+     	method: 'GET',
+      headers: {
+        'Authorization': 'JWT ' + token
+      },
+      json: true
+    };
+    return rp(options);
 	},
 
 	// *******************************************************
@@ -155,7 +155,7 @@ module.exports = {
 			"where": { \
 			"sensor_id": "%s", \
 			"timestamp": {"between": [%s, %s]}, \
-			"payload": {"between": [%s, %s]}}}', 
+			"payload": {"between": [%s, %s]}}}',
 			sensor_id, start_t, end_t, min_v, max_v);
 		return rp(firstsOptions(filterString, token));
 	},
@@ -166,7 +166,7 @@ module.exports = {
 			"order": "timestamp", \
 			"where": { \
 			"sensor_id": "%s", \
-			"timestamp": {"between": [%s, %s]}}}', 
+			"timestamp": {"between": [%s, %s]}}}',
 			sensor_id, start_t, end_t);
 		return rp(firstsOptions(filterString, token));
 	}
