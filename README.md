@@ -11,7 +11,7 @@ Deployment
 
 Run the following script under the root directory to install all the dependencies that the service needs:
 ```shell
-sudo npm install --save
+npm i -d
 ```
 Then start the service by running the following script:
 ```shell
